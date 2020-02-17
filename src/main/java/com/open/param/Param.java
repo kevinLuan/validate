@@ -65,7 +65,7 @@ public interface Param {
 	 * 
 	 * @param parentNode
 	 */
-	void setParentNode(Param parentNode);
+	Param setParentNode(Param parentNode);
 
 	/**
 	 * 获取父亲节点

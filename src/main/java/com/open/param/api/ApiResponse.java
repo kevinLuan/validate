@@ -9,65 +9,63 @@ import com.open.param.Param;
 
 /**
  * API请求响应验证处理
- * 
+ *
  * @author KEVIN LUAN
  */
 public class ApiResponse extends ApiBase<JsonNode> {
-	public Param responseParam;
-	private CheckParam checkParam = CheckParam.getInstance(this);
 
-	private ApiResponse(Param responseParam) {
-		this.responseParam = responseParam;
-	}
+  public Param responseParam;
+  private CheckParam checkParam = CheckParam.getInstance(this);
 
-	@Override
-	public ApiResponse setReference() {
-		responseParam = AdjustParamInstance.adjust(responseParam);
-		ParentReference.refreshParentReference(responseParam);
-		return this;
-	}
+  private ApiResponse(Param responseParam) {
+    this.responseParam = responseParam;
+  }
 
-	/**
-	 * 根据API返回协议格式定义进行合法性验证
-	 * 
-	 * @param jsonNode
-	 * @return
-	 */
-	public ApiResponse check(JsonNode jsonNode) {
-		checkParam.checkResponse(responseParam, jsonNode);
-		return this;
-	}
+  @Override
+  public ApiResponse setReference() {
+    responseParam = AdjustParamInstance.adjust(responseParam);
+    ParentReference.refreshParentReference(responseParam);
+    return this;
+  }
 
-	/**
-	 * 根据返回数据格式定义extract数据
-	 * 
-	 * @return
-	 */
-	public Map<String, Object> extract(JsonNode jsonNode) {
-		if (responseParam == null) {
-			throw new IllegalArgumentException("responseParam must be not null");
-		}
-		object(jsonNode, responseParam);
-		Iterator<String> iterator = jsonNode.fieldNames();
-		Map<String, Object> data = new HashMap<>(responseParam.asObject().getChildren().length);
-		while (iterator.hasNext()) {
-			String key = iterator.next();
-			data.put(key, jsonNode.get(key));
-		}
-		return data;
-	}
+  /**
+   * 根据API返回协议格式定义进行合法性验证
+   */
+  @Override
+  public ApiResponse check(JsonNode jsonNode) {
+    checkParam.checkResponse(responseParam, jsonNode);
+    return this;
+  }
 
-	public static ApiCheck<JsonNode> make(Param param) {
-		return new ApiResponse(param).setReference();
-	}
+  /**
+   * 根据返回数据格式定义extract数据
+   */
+  @Override
+  public Map<String, Object> extract(JsonNode jsonNode) {
+    if (responseParam == null) {
+      throw new IllegalArgumentException("responseParam must be not null");
+    }
+    object(jsonNode, responseParam);
+    Iterator<String> iterator = jsonNode.fieldNames();
+    Map<String, Object> data = new HashMap<>(responseParam.asObject().getChildren().length);
+    while (iterator.hasNext()) {
+      String key = iterator.next();
+      data.put(key, jsonNode.get(key));
+    }
+    return data;
+  }
 
-	@Override
-	public String getTipError(String path) {
-		return "下游服务返回数据错误->`" + path + "`";
-	}
+  public static ApiCheck<JsonNode> make(Param param) {
+    return new ApiResponse(param).setReference();
+  }
 
-	@Override
-	public String getTipMissing(String path) {
-		return "下游服务返回数据缺失->`" + path + "`";
-	}
+  @Override
+  public String getTipError(String path) {
+    return "下游服务返回数据错误->`" + path + "`";
+  }
+
+  @Override
+  public String getTipMissing(String path) {
+    return "下游服务返回数据缺失->`" + path + "`";
+  }
 }

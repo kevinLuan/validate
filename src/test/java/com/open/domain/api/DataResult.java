@@ -19,7 +19,7 @@ public class DataResult<T> extends Result {
    */
   @JsonProperty("status")
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  private Status status = new Status(0, "");
+  private Status status = new Status();
   /**
    * 返回Result
    */
@@ -116,6 +116,5 @@ public class DataResult<T> extends Result {
     return ReflectionToStringBuilder.toString(this);
   }
 
-  public DataResult() {
-  }
+  public DataResult() {}
 }
