@@ -1,11 +1,5 @@
 package com.open.param.test;
 
-import com.open.domain.api.DataResult;
-import com.open.json.api.GsonSerialize;
-import com.open.json.api.JsonUtils;
-import com.open.param.Param;
-import com.open.param.ParamArray;
-import com.open.param.api.ApiHelper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,10 +11,16 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.gson.Gson;
+import com.open.domain.api.DataResult;
+import com.open.json.api.GsonSerialize;
+import com.open.json.api.JsonUtils;
 import com.open.param.DataType;
+import com.open.param.Param;
+import com.open.param.ParamArray;
 import com.open.param.ParamBase;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
+import com.open.param.validate.RequestValidate;
 
 public class TestParam {
 
@@ -83,11 +83,11 @@ public class TestParam {
     String json = JsonUtils.stringify(map);
     request.addParameter("objParam", json);
     Param param = buildParam();
-    Map<String, Object> data = ApiHelper.request(param).checkRequest(request)
-        .extractRequest(request);
+    Map<String, Object> data = RequestValidate.of(param).check(request)
+        .extract(request);
     String actual = JsonUtils.stringify(data);
     HttpServletRequest myRequest = buildHttpRequest();
-    data = ApiHelper.request(param).checkRequest(myRequest).extractRequest(myRequest);
+    data = RequestValidate.of(param).check(myRequest).extract(myRequest);
     String expected = JsonUtils.stringify(data);
     Assert.assertEquals(expected, actual);
     System.out.println(actual);
@@ -127,8 +127,8 @@ public class TestParam {
           )//
       );
       Param B1 = ParamObject.required("B1", "X", ParamObject.required("result", "X"));
-      Map<String, Object> map = ApiHelper.request(A1, B1).checkRequest(request)
-          .extractRequest(request);
+      Map<String, Object> map = RequestValidate.of(A1, B1).check(request)
+          .extract(request);
       Assert.fail("没有出现预期错误");
       System.out.println(map);
     } catch (Exception e) {
@@ -215,8 +215,8 @@ public class TestParam {
               ParamPrimitive.required("statusReason", DataType.String, "statusReason")//
           )//
       );
-      Map<String, Object> map = ApiHelper.request(A1, B1).checkRequest(request)
-          .extractRequest(request);
+      Map<String, Object> map = RequestValidate.of(A1, B1).check(request)
+          .extract(request);
       System.out.println(map);
       String string =
           "{'result':{'T':[{'status':{'statusCode':0},'result':[{'status':{'statusReason':''},'result':{'city':'北京'}}]}]}}"
@@ -227,7 +227,7 @@ public class TestParam {
               .replace("'", "\"");
       Assert.assertEquals(expected, JsonUtils.stringify(map.get("B1")));
 
-      map = ApiHelper.request(list).checkRequest(request).extractRequest(request);
+      map = RequestValidate.of(list).check(request).extract(request);
       ArrayNode arrayNode = (ArrayNode) map.get("list");
       Assert.assertEquals(JsonUtils.stringify(arrayNode.get(0)),
           JsonUtils.stringify(arrayNode.get(1)));
@@ -235,7 +235,7 @@ public class TestParam {
       System.out.println("List-->>>" + JsonUtils.stringify(map.get("list")));
       long start = System.currentTimeMillis();
       for (int i = 0; i < 50000; i++) {
-        ApiHelper.request(A1, B1, list).checkRequest(request).extractRequest(request);
+        RequestValidate.of(A1, B1, list).check(request).extract(request);
       }
       System.out.println("使用耗时:" + (System.currentTimeMillis() - start));
     }
@@ -249,7 +249,7 @@ public class TestParam {
     System.out.println(gson.toJson(param));
     HttpServletRequest request = buildHttpRequest();
     System.out.println("objParam:" + request.getParameter("objParam"));
-    ApiHelper.request(param).checkRequest(request);
+    RequestValidate.of(param).check(request);
   }
 
   @Test
@@ -276,7 +276,7 @@ public class TestParam {
     String json1 = JsonUtils.stringify(map);
     mock_request.addParameter("objParam", json1);
     try {
-      ApiHelper.request(param).checkRequest(mock_request);
+      RequestValidate.of(param).check(mock_request);
     } catch (Exception e) {
       Assert.assertEquals("`objParam.ids[]`必须小于等于100", e.getMessage());
     }
@@ -289,7 +289,7 @@ public class TestParam {
     ParamPrimitive param = ParamPrimitive.required("password", DataType.String, "密码").setMin(8)
         .setMax(20);
     try {
-      ApiHelper.request(param).checkRequest(request);
+      RequestValidate.of(param).check(request);
       Assert.fail("没有出现预期错误");
     } catch (Exception e) {
       Assert.assertEquals(param.getTipMsg(), e.getMessage());
@@ -306,7 +306,7 @@ public class TestParam {
       ParamPrimitive param = ParamPrimitive.required("price", DataType.Number, "价格").setMin(8)
           .setMax(20);
       try {
-        ApiHelper.request(param).checkRequest(request);
+        RequestValidate.of(param).check(request);
         Assert.fail("没有出现预期错误");
       } catch (Exception e) {
         Assert.assertEquals(param.getTipMsg(), e.getMessage());
@@ -315,14 +315,14 @@ public class TestParam {
     {
       ParamPrimitive param = ParamPrimitive.required("price_min", DataType.Number, "价格")
           .setMin(7.18).setMax(20);
-      ApiHelper.request(param).checkRequest(request);
+      RequestValidate.of(param).check(request);
     }
 
     {
       ParamPrimitive param = ParamPrimitive.required("price_max", DataType.Number, "价格")
           .setMin(7.18).setMax(20);
       try {
-        ApiHelper.request(param).checkRequest(request);
+        RequestValidate.of(param).check(request);
         Assert.fail("没有出现预期错误");
       } catch (Exception e) {
         Assert.assertEquals(param.getTipMsg(), e.getMessage());
@@ -364,7 +364,7 @@ public class TestParam {
       {
         try {
           request.addParameter("objParam", "{\"obj1\":{}}");
-          ApiHelper.request(param).checkRequest(request);
+          RequestValidate.of(param).check(request);
           Assert.fail("没有出现预期错误");
         } catch (Exception e) {
           Assert.assertEquals("`objParam.obj1.name`参数缺失", e.getMessage());
@@ -401,7 +401,7 @@ public class TestParam {
       {
         try {
           request.addParameter("objParam", "{\"obj1\":{\"name\":\"张三\"}}");
-          ApiHelper.request(param).checkRequest(request);
+          RequestValidate.of(param).check(request);
           Assert.fail("没有出现预期错误");
         } catch (Exception e) {
           Assert.assertEquals("`objParam.items`参数缺失", e.getMessage());
@@ -426,7 +426,7 @@ public class TestParam {
         {
           try {
             request.addParameter("objParam", "{\"items\":{\"name\":\"张三\"}}");
-            ApiHelper.request(param).checkRequest(request);
+            RequestValidate.of(param).check(request);
             Assert.fail("没有出现预期错误");
           } catch (Exception e) {
             Assert.assertEquals("`objParam.items`参数错误", e.getMessage());
@@ -452,7 +452,7 @@ public class TestParam {
         {
           try {
             request.addParameter("objParam", "{\"items\":[{\"name\":\"张三\"}]}");
-            ApiHelper.request(param).checkRequest(request);
+            RequestValidate.of(param).check(request);
             Assert.fail("没有出现预期错误");
           } catch (Exception e) {
             Assert.assertEquals("`objParam.items.id`参数缺失", e.getMessage());
@@ -479,7 +479,7 @@ public class TestParam {
           try {
             request
                 .addParameter("objParam", "{\"items\":[{\"id\":1,\"name\":\"张三\",\"ids\":null}]}");
-            ApiHelper.request(param).checkRequest(request);
+            RequestValidate.of(param).check(request);
             Assert.fail("没有出现预期错误");
           } catch (Exception e) {
             Assert.assertEquals("`objParam.items.ids`参数缺失", e.getMessage());
@@ -505,7 +505,7 @@ public class TestParam {
         {
           try {
             request.addParameter("objParam", "{\"items\":[{\"id\":1,\"name\":\"张三\",\"ids\":[]}]}");
-            ApiHelper.request(param).checkRequest(request);
+            RequestValidate.of(param).check(request);
             Assert.fail("没有出现预期错误");
           } catch (Exception e) {
             Assert.assertEquals("objParam.items.ids[]不能为空", e.getMessage());
@@ -532,7 +532,7 @@ public class TestParam {
           try {
             request.addParameter("objParam",
                 "{\"items\":[{\"id\":1,\"name\":\"张三\",\"ids\":[10000]}]}");
-            ApiHelper.request(param).checkRequest(request);
+            RequestValidate.of(param).check(request);
             Assert.fail("没有出现预期错误");
           } catch (Exception e) {
             Assert.assertEquals("`objParam.items.ids`限制范围10(含)~100(含)", e.getMessage());
@@ -559,7 +559,7 @@ public class TestParam {
           try {
             request.addParameter("objParam",
                 "{\"items\":[{\"id\":1,\"name\":\"张三\",\"ids\":[true,false]}]}");
-            ApiHelper.request(param).checkRequest(request);
+            RequestValidate.of(param).check(request);
             Assert.fail("没有出现预期错误");
           } catch (Exception e) {
             Assert.assertEquals("`objParam.items.ids`参数错误", e.getMessage());
@@ -586,7 +586,7 @@ public class TestParam {
           try {
             request
                 .addParameter("objParam", "{\"items\":[{\"id\":1,\"name\":\"张三\",\"ids\":[{}]}]}");
-            ApiHelper.request(param).checkRequest(request);
+            RequestValidate.of(param).check(request);
             Assert.fail("没有出现预期错误");
           } catch (Exception e) {
             Assert.assertEquals("`objParam.items.ids`参数错误", e.getMessage());
@@ -618,7 +618,7 @@ public class TestParam {
           try {
             request.addParameter("objParam",
                 "{\"items\":[{\"id\":1,\"name\":\"张三\",\"ids\":[100],\"array\":[{\"test\":\"x\"}]}]}");
-            ApiHelper.request(param).checkRequest(request);
+            RequestValidate.of(param).check(request);
             Assert.fail("没有出现预期错误");
           } catch (Exception e) {
             Assert.assertEquals("`objParam.items.array.test`必须是一个数字", e.getMessage());
@@ -686,8 +686,8 @@ public class TestParam {
         A1 = GsonSerialize.INSTANCE.decode(GsonSerialize.INSTANCE.encode(A1), ParamBase.class);
         B1 = GsonSerialize.INSTANCE.decode(GsonSerialize.INSTANCE.encode(B1), ParamBase.class);
       }
-      Map<String, Object> map = ApiHelper.request(A1, B1).checkRequest(request)
-          .extractRequest(request);
+      Map<String, Object> map = RequestValidate.of(A1, B1).check(request)
+          .extract(request);
       Assert.fail("没有出现预期错误");
       System.out.println(map);
     } catch (Exception e) {
@@ -701,7 +701,7 @@ public class TestParam {
       MockHttpServletRequest request = new MockHttpServletRequest();
       request.addParameter("obj", "");
       Param param = ParamObject.required("obj", "参数描述");
-      ApiHelper.request(param).checkRequest(request);
+      RequestValidate.of(param).check(request);
       Assert.fail("没有出现预期错误");
     } catch (IllegalArgumentException e) {
       Assert.assertEquals("`obj`参数错误", e.getMessage());

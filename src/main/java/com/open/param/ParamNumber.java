@@ -15,7 +15,7 @@ public class ParamNumber extends ParamPrimitive {
     super(name, required, DataType.Number, description);
   }
 
-  public static ParamNumber make(String name, boolean required, String description) {
+  static ParamNumber make(String name, boolean required, String description) {
     return new ParamNumber(name, required, description);
   }
 

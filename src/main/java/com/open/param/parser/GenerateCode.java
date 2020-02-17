@@ -34,41 +34,52 @@ public class GenerateCode {
     if (result.endsWith(NEW_LINE)) {
       result = result.substring(0, result.length() - NEW_LINE.length());
     }
-    return result + ";";
+    return result.replace("\n\n","\n") + ";";
   }
 
   private static void parserArray(ParamArray array, StringBuilder builder) {
     String name = array.getName();
     String description = array.getDescription();
     ParamBase children = (ParamBase) array.getChildrenAsParam();
-    if (children.isObject()) {
-      StringBuilder stringBuilder = new StringBuilder();
-      parserObject(children.asObject(), stringBuilder);
+    String showName = formatParam(name), showDesc = formatParam(description);
+    if (name.equals("items")) {
+      System.out.println("debug");
+    }
+    if (children == null) {
       if (array.isRequired()) {
         builder.append(
-            "ParamArray.required(" + formatParam(name) + "," + formatParam(description) + ",");
+            "ParamArray.required(" + showName + "," + formatParam(description) + ")");
       } else {
-        builder.append("ParamArray.of(" + formatParam(name) + "," + formatParam(description) + ",");
+        builder.append("ParamArray.of(" + showName + "," + formatParam(description) + ")");
       }
-      builder.append(NEW_LINE);
-      builder.append(stringBuilder + ")");
-    } else if (children.isPrimitive()) {
-      // 子节点
-      String childrenCode = children.asPrimitive().toJavaCode();
-      // 子节点的父级节点
-      String arrayNode;
-      {
-        if (array.isRequired()) {
-          arrayNode =
-              "ParamArray.required(" + formatParam(name) + "," + formatParam(description) + ",";
-        } else {
-          arrayNode = "ParamArray.of(" + formatParam(name) + "," + formatParam(description) + ",";
-        }
-        arrayNode += NEW_LINE + childrenCode + ")";
-      }
-      builder.append(arrayNode);
     } else {
-      throw new IllegalArgumentException("不支持的类型:" + children);
+      if (children.isObject()) {
+        StringBuilder stringBuilder = new StringBuilder();
+        parserObject(children.asObject(), stringBuilder);
+        if (children.isRequired()) {
+          builder.append("ParamArray.required(" + showName + "," + showDesc + ",");
+        } else {
+          builder.append("ParamArray.of(" + showName + "," + showDesc + ",");
+        }
+        builder.append(NEW_LINE);
+        builder.append(stringBuilder + ")");
+      } else if (children.isPrimitive()) {
+        // 子节点
+        String childrenCode = children.asPrimitive().toJavaCode();
+        // 子节点的父级节点
+        String arrayNode;
+        {
+          if (array.isRequired()) {
+            arrayNode = "ParamArray.required(" + showName + "," + showDesc + ",";
+          } else {
+            arrayNode = "ParamArray.of(" + showName + "," + showDesc + ",";
+          }
+          arrayNode += NEW_LINE + childrenCode + ")";
+        }
+        builder.append(arrayNode);
+      } else {
+        throw new IllegalArgumentException("不支持的类型:" + children);
+      }
     }
   }
 
@@ -84,37 +95,35 @@ public class GenerateCode {
         StringBuilder stringBuilder = new StringBuilder();
         parserArray(param.asArray(), stringBuilder);
         nodeBuilder.append(stringBuilder.toString());
-        nodeBuilder.append(",");
-        newLine(nodeBuilder);
       } else if (param.isObject()) {
         StringBuilder childrenObjectBuilder = new StringBuilder();
         parserObject(param.asObject(), childrenObjectBuilder);
         nodeBuilder.append(childrenObjectBuilder.toString());
-        if (i < childrens.length - 1) {
-          nodeBuilder.append(",");
-          newLine(nodeBuilder);
-        }
+
       } else if (param.isPrimitive()) {
         StringBuilder stringBuilder = new StringBuilder();
         parserPrimitive(param.asPrimitive(), stringBuilder);
         newLine(nodeBuilder);
         nodeBuilder.append(stringBuilder.toString());
+      } else {
+        throw new IllegalArgumentException("不支持的类型`" + param.getDataType() + "`");
+      }
+      if (i < childrens.length - 1) {
         nodeBuilder.append(",");
         newLine(nodeBuilder);
       }
     }
-    if (name != null && name.length() > 0)
-
-    {
+    if (name != null && name.length() > 0) {
+      String showName = formatParam(name);
+      String showDesc = formatParam(description);
       if (object.isRequired()) {
         builder.append(
-            "ParamObject.required(" + formatParam(name) + "," + formatParam(description) + ","
-                + remoteLastComma(newLine(nodeBuilder)) + NEW_LINE + ")");
+            "ParamObject.required(" + showName + "," + showDesc + "," + remoteLastComma(
+                newLine(nodeBuilder)) + NEW_LINE + ")");
       } else {
-        builder.append("ParamObject.of(" + formatParam(name) + "," + formatParam(description) + ","
+        builder.append("ParamObject.of(" + showName + "," + showDesc + ","
             + remoteLastComma(newLine(nodeBuilder)) + NEW_LINE + ")");
       }
-
     } else {
       if (object.isRequired()) {
         builder.append(
@@ -123,7 +132,6 @@ public class GenerateCode {
         builder.append("ParamObject.of(" + remoteLastComma(newLine(nodeBuilder)) + NEW_LINE + ")");
       }
     }
-
     newLine(builder);
   }
 

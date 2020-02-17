@@ -7,6 +7,7 @@ import com.open.json.api.JsonUtils;
 import com.open.param.Param;
 import com.open.param.ParamArray;
 import com.open.param.ParamObject;
+import org.apache.commons.lang3.StringUtils;
 
 class CheckParam {
 
@@ -56,8 +57,12 @@ class CheckParam {
     if (request == null) {
       throw new IllegalArgumentException("request must be not null");
     }
-    for (Param param : params) {
+    for (int i = 0; i < params.length; i++) {
+      Param param = params[i];
       String name = param.getName();
+      if (StringUtils.isBlank(name)) {
+        throw new IllegalArgumentException("定义参数params[" + i + "].name 不能为空");
+      }
       String value = request.getParameter(name);
       if (param.isRequired()) {
         if (value == null) {

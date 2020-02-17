@@ -29,7 +29,7 @@ public class ParamString extends ParamPrimitive {
   /**
    * 创建一个必须参数 <p> 当前基本类型只能用在父节点是Array的情况例如：array[0,1,2]
    */
-  public static ParamString require(String description) {
+  public static ParamString required(String description) {
     return ParamString.make("", true, description);
   }
 
@@ -68,7 +68,7 @@ public class ParamString extends ParamPrimitive {
     String descStr = GenerateCode.formatParam(description);
     if (required) {
       if (StringUtils.isBlank(name) && StringUtils.isBlank(description)) {
-        builder.append("ParamString.require(" + descStr + ")");
+        builder.append("ParamString.required(" + descStr + ")");
       } else {
         builder.append("ParamString.required(" + nameStr + "," + descStr + ")");
       }

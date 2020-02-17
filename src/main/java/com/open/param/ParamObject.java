@@ -18,9 +18,9 @@ public class ParamObject extends ParamBase {
       for (int i = 0; i < childrens.length; i++) {
         Param param = childrens[i];
         this.children[i] = (ParamBase) param;
-        if (param.isObjectValue()) {
-          throw new IllegalArgumentException("ParamObject子节点Name不能为空");
-        }
+//        if (param.isObjectValue()) {
+//          throw new IllegalArgumentException("ParamObject子节点Name不能为空");
+//        }
       }
     }
   }

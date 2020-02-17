@@ -15,10 +15,10 @@ import com.open.param.ParamNumber;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
 import com.open.param.ParamString;
-import com.open.param.api.ApiHelper;
 import com.open.param.parser.GenerateCode;
 import com.open.param.parser.GenerateMockSample;
 import com.open.param.parser.ParamParser;
+import com.open.param.validate.JsonValidate;
 
 public class TestParamUtils {
 
@@ -32,7 +32,7 @@ public class TestParamUtils {
     param.asObject().getChildren()[0].asPrimitive().between(10, 20);
     try {
       JsonNode node = JsonUtils.parser(json);
-      ApiHelper.response(param).checkResponse(node);
+      JsonValidate.of(param).check(node);
       Assert.fail("没有出现预期的错误");
     } catch (Exception e) {
       Assert.assertEquals("`name`长度限制在10~20", e.getMessage());
@@ -43,7 +43,7 @@ public class TestParamUtils {
     param.asObject().getChildren()[1].asArray().getChildrenAsParam().asPrimitive().between(1, 50);
     try {
       JsonNode node = JsonUtils.parser(json);
-      ApiHelper.response(param).checkResponse(node);
+      JsonValidate.of(param).check(node);
       Assert.fail("没有出现预期的错误");
     } catch (Exception e) {
       Assert.assertEquals("`ids`限制范围1~50", e.getMessage());
@@ -78,8 +78,8 @@ public class TestParamUtils {
     String json =
         "{\"name\":\"BeJson\",\"url\":\"http://www.bejson.com\",\"page\":88,\"isNonProfit\":true,\"address\":{\"street\":\"科技园路.\",\"city\":\"江苏苏州\",\"country\":\"中国\",\"arrayBoolean\":[true,false,true,false],\"arrayFloat\":[1.234,2.345],\"arrayString\":[\"篮球\",\"足球\"],\"arrayLong\":[1234234,234234],\"arrayObj\":[{\"name\":\"Google\",\"url\":\"http://www.google.com\"},{\"name\":\"Baidu\",\"url\":\"http://www.baidu.com\"},{\"name\":\"SoSo\",\"url\":\"http://www.SoSo.com\"}]},\"links\":[{\"name\":\"Google\",\"url\":\"http://www.google.com\"},{\"name\":\"Baidu\",\"url\":\"http://www.baidu.com\"},{\"name\":\"SoSo\",\"url\":\"http://www.SoSo.com\"}]}";
     String javaCode = GenerateCode.getJavaCode(json);
-    System.out.println("JSON原始数据:"+json);
-    System.out.println("生成java代码:"+javaCode);
+    System.out.println("JSON原始数据:" + json);
+    System.out.println("生成java代码:" + javaCode);
     Param objParam = ParamObject.of(
         ParamString.of("name", null).setExampleValue("BeJson"),
         ParamString.of("url", null).setExampleValue("http://www.bejson.com"),
@@ -108,7 +108,8 @@ public class TestParamUtils {
 
     String actual = GenerateMockSample.getMockData(objParam);
     System.out.println(actual);
-    String expected = "{\"name\":\"BeJson\",\"url\":\"http://www.bejson.com\",\"page\":88,\"isNonProfit\":\"true\",\"address\":{\"street\":\"科技园路.\",\"city\":\"江苏苏州\",\"country\":\"中国\",\"arrayBoolean\":[\"true\"],\"arrayFloat\":[1.234],\"arrayString\":[\"篮球\"],\"arrayLong\":[1234234],\"arrayObj\":[{\"name\":\"Google\",\"url\":\"http://www.google.com\"}]},\"links\":[{\"name\":\"Google\",\"url\":\"http://www.google.com\"}]}";
+    String expected =
+        "{\"name\":\"BeJson\",\"url\":\"http://www.bejson.com\",\"page\":88,\"isNonProfit\":\"true\",\"address\":{\"street\":\"科技园路.\",\"city\":\"江苏苏州\",\"country\":\"中国\",\"arrayBoolean\":[\"true\"],\"arrayFloat\":[1.234],\"arrayString\":[\"篮球\"],\"arrayLong\":[1234234],\"arrayObj\":[{\"name\":\"Google\",\"url\":\"http://www.google.com\"}]},\"links\":[{\"name\":\"Google\",\"url\":\"http://www.google.com\"}]}";
     Assert.assertEquals(expected, actual);
   }
 
@@ -135,7 +136,7 @@ public class TestParamUtils {
     String expected = "ParamObject.required(\n" + //
         "ParamPrimitive.of('name',DataType.String, '张三丰'),\n"//
         + "ParamArray.required('ids','Array[100]',\n"//
-        + "ParamPrimitive.of(DataType.Number)),\n"//
+        + "ParamPrimitive.of(DataType.Number,null)),\n"//
         + "ParamArray.required('items','Array[{Object}]',\n"//
         + "ParamObject.required(\n" //
         + "ParamString.of(\"name1\",\"手机\"),\n"
@@ -188,7 +189,7 @@ public class TestParamUtils {
             + "ParamPrimitive.of('id',DataType.String, 'ID').setExampleValue('1234'),"
             + "\nParamPrimitive.of('name',DataType.String, '名称').setExampleValue('xxx')\n"
             + ")\n"
-            + "\n);";
+            + ");";
     expected = expected.replace("'", "\"");
     String actual = GenerateCode.getJavaCode(param);
     System.out.println(actual);

@@ -35,9 +35,7 @@ public class ParamPrimitive extends ParamBase {
   }
 
   /**
-   * 创建一个必须参数
-   * <p>
-   * 当前基本类型只能用在父节点是Array的情况例如：array[0,1,2]
+   * 创建一个必须参数 <p> 当前基本类型只能用在父节点是Array的情况例如：array[0,1,2]
    */
   public static ParamPrimitive required(DataType dataType, String description) {
     return ParamPrimitive.make("", true, dataType, null, null, null);
@@ -51,9 +49,7 @@ public class ParamPrimitive extends ParamBase {
   }
 
   /**
-   * 创建一个非必须参数
-   * <p>
-   * 当前基本类型只能用在父节点是Array的情况例如：array[0,1,2]
+   * 创建一个非必须参数 <p> 当前基本类型只能用在父节点是Array的情况例如：array[0,1,2]
    */
   public static ParamPrimitive of(DataType dataType, String description) {
     return ParamPrimitive.make("", false, dataType, description, null, null);
@@ -228,21 +224,24 @@ public class ParamPrimitive extends ParamBase {
 
   public String toJavaCode() {
     StringBuilder builder = new StringBuilder();
+    String desc = GenerateCode.formatParam(description);
     if (name.length() > 0) {
       if (isRequired()) {
+        ParamPrimitive.required(name, dataType, description);
         builder.append("ParamPrimitive.required(" + GenerateCode.formatParam(name) + ","
             + GenerateCode.getType(dataType) + ","
-            + GenerateCode.formatParam(description) + ")");
+            + desc + ")");
       } else {
         builder.append("ParamPrimitive.of(" + GenerateCode.formatParam(name) + ","
             + GenerateCode.getType(dataType) + ", "
-            + GenerateCode.formatParam(description) + ")");
+            + desc + ")");
       }
     } else {
       if (isRequired()) {
-        builder.append("ParamPrimitive.required(" + GenerateCode.getType(dataType) + ")");
+        builder
+            .append("ParamPrimitive.required(" + GenerateCode.getType(dataType) + "," + desc + ")");
       } else {
-        builder.append("ParamPrimitive.of(" + GenerateCode.getType(dataType) + ")");
+        builder.append("ParamPrimitive.of(" + GenerateCode.getType(dataType) + "," + desc + ")");
       }
     }
     builder.append(GenerateCode.buildExampleValue(this));

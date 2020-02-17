@@ -1,9 +1,5 @@
 package com.open.param.test;
 
-import com.open.json.api.JsonUtils;
-import com.open.param.Param;
-import com.open.param.ParamArray;
-import com.open.param.api.ApiHelper;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,9 +10,14 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.open.json.api.JsonUtils;
 import com.open.param.DataType;
+import com.open.param.Param;
+import com.open.param.ParamArray;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
+import com.open.param.validate.JsonValidate;
+import com.open.param.validate.RequestValidate;
 
 public class ApiHelperTest {
 
@@ -69,8 +70,8 @@ public class ApiHelperTest {
     extendMap.put("a", 10);
     extendMap.put("obj", new HashMap<String, Object>());
     map.put("extendMap", extendMap);
-    map.put("array_any", new Object[]{extendMap});
-    map.put("array_any_simple", new int[]{1, 2, 3, 4, 5});
+    map.put("array_any", new Object[] {extendMap});
+    map.put("array_any_simple", new int[] {1, 2, 3, 4, 5});
     return map;
   }
 
@@ -94,7 +95,8 @@ public class ApiHelperTest {
     System.out.println(json);
     JsonNode jsonNode = JsonUtils.parser(json);
     Map<String, Object> map =
-        ApiHelper.response(getResultParam()).checkResponse(jsonNode).extractResponse(jsonNode);
+        JsonValidate.of(getResultParam()).check(jsonNode).extract(jsonNode);
+
     System.out.println(JsonUtils.stringify(map));
     String expected =
         "{'result':{'array_any':[{'a':10,'obj':{}}],'array_any_simple':[1,2,3,4,5],'extendMap':{'a':10,'obj':{}},'name':'张三丰','ids':['100'],'items':[{'name':'手机','id':'2'}],'age':'100.11'},'status':{'status_code':100,'status_reasion':'参数错误'}}";
@@ -113,7 +115,7 @@ public class ApiHelperTest {
             )//
         ), //
         ParamArray.required("ids", "id列表", //
-            ParamPrimitive.required(DataType.Number,null).setMax(100) //
+            ParamPrimitive.required(DataType.Number, null).setMax(100) //
         ), //
         ParamObject.of("extendMap", "扩展Map(任意子节点)"), ParamArray.of("array_any", "任意数组类型"),
         ParamArray.of("array_any_simple", "任意数组类型"));
@@ -138,8 +140,8 @@ public class ApiHelperTest {
       extendMap.put("a", 10);
       extendMap.put("obj", new HashMap<String, Object>());
       map.put("extendMap", extendMap);
-      map.put("array_any", new Object[]{extendMap});
-      map.put("array_any_simple", new int[]{1, 2, 3, 4, 5});
+      map.put("array_any", new Object[] {extendMap});
+      map.put("array_any_simple", new int[] {1, 2, 3, 4, 5});
     }
     String json = JsonUtils.stringify(map);
     request.addParameter("objParam", json);
@@ -148,8 +150,8 @@ public class ApiHelperTest {
 
   @Test
   public void test_param() {
-    Map<String, Object> map = ApiHelper.request(buildParam()).checkRequest(buildHttpRequest())
-        .extractRequest(buildHttpRequest());
+    Map<String, Object> map = RequestValidate.of(buildParam()).check(buildHttpRequest())
+        .extract(buildHttpRequest());
     System.out.println("提取数据：" + JsonUtils.stringify(map));
     String expected =
         "{'objParam':{'array_any':[{'a':10,'obj':{}}],'array_any_simple':[1,2,3,4,5],'extendMap':{'a':10,'obj':{}},'name':'张三丰','ids':['100'],'items':[{'name':'手机','id':'2'}],'age':'100.11'}}";

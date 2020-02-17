@@ -1,10 +1,11 @@
 package com.open.param.test;
 
-import com.open.param.api.ApiParams;
-import com.open.json.api.JsonUtils;
-import com.open.param.Param;
-import com.open.param.ParamArray;
-import com.open.param.api.ApiHelper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.open.param.ParamNumber;
+import com.open.param.ParamString;
+import com.open.param.parser.GenerateCode;
+import com.sun.javafx.tools.packager.MakeAllParams;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,11 +15,17 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.open.json.api.JsonUtils;
 import com.open.param.DataType;
+import com.open.param.Param;
+import com.open.param.ParamArray;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
+import com.open.param.api.ApiParams;
+import com.open.param.validate.JsonValidate;
 
 public class TestResponse {
+
   @After
   public void after() {
     System.out.println();
@@ -87,7 +94,7 @@ public class TestResponse {
     Param param = getResultParam();
     JsonNode dataResult = JsonUtils.parser(getResponseData());
     Map<String, Object> response =
-        ApiHelper.response(param).checkResponse(dataResult).extractResponse(dataResult);
+        JsonValidate.of(param).check(dataResult).extract(dataResult);
     System.out.println("提取数据：" + JsonUtils.stringify(response));
     String expected =
         "{'result':{'name':'张三丰','ids':['100'],'items':[{'name':'手机','id':'2'}],'age':'100.11'},'status':{'status_code':100,'status_reasion':'参数错误'}}"
@@ -95,22 +102,67 @@ public class TestResponse {
     Assert.assertEquals(expected, JsonUtils.stringify(response));
   }
 
-  public static void main(String[] args) {
+  @Test
+  public void test() {
     {
       Param param = getResultParam();
       JsonNode dataResult = JsonUtils.parser(getResponseData());
-      System.out.println("返回原始数据：" + dataResult.toString());
+      System.out.println("原始数据：" + dataResult.toString());
       Map<String, Object> response =
-          ApiHelper.response(param).checkResponse(dataResult).extractResponse(dataResult);
-      System.out.println("提取需要的数据：" + JsonUtils.stringify(response));
-      ApiParams.make(param).check(null);
+          JsonValidate.of(param).check(dataResult).extract(dataResult);
+      System.out.println("提取有效数据：" + JsonUtils.stringify(response));
     }
     long start = System.currentTimeMillis();
     for (int i = 0; i < 10000; i++) {
       Param param = getResultParam();
       JsonNode dataResult = JsonUtils.parser(getResponseData());
-      ApiHelper.response(param).checkResponse(dataResult).extractResponse(dataResult);
+      JsonValidate.of(param).check(dataResult).extract(dataResult);
     }
     System.out.println("use time:" + (System.currentTimeMillis() - start));
   }
+
+  @Test
+  public void testCheck() {
+    String json = "{'items':[{"
+        + "'name':'张三',"
+        + "'array':[1,2,3],"
+        + "'num':'xxx'"
+        + "}"
+        + "]}";
+    ParamObject paramObject = ParamObject.of(
+        ParamArray.of("items", null,
+            ParamObject.of(
+                ParamString.of("name", null).setExampleValue("name"),
+                ParamArray.of("array", null),
+                ParamNumber.of("num", null)
+            )
+        )
+    );
+    {
+      //TODO 测试数据类型错误
+      JsonNode data = JsonUtils.parser(json.replace("'", "\""));
+      try {
+        JsonValidate.of(paramObject).check(data).extract(data);
+        Assert.fail("没有预期的错误");
+      } catch (IllegalArgumentException ex) {
+        Assert.assertEquals("`items.num`必须是一个数字", ex.getMessage());
+      }
+    }
+    {//TODO 测试删除无效字段
+      json = "{'items':[{"
+          + "'name_':'张三',"
+          + "'array':[1,2,3],"
+          + "'num':'12312'"
+          + "}"
+          + "]}";
+      JsonNode data = JsonUtils.parser(json.replace("'", "\""));
+      Map<String, Object> map = JsonValidate.of(paramObject).check(data).extract(data);
+      System.out.println("提取有效字段:" + JsonUtils.toString(map));
+      ObjectNode objectNode = (ObjectNode) ((ArrayNode) (map.get("items"))).get(0);
+      Assert.assertNull(objectNode.get("name_"));
+      Assert.assertEquals(3, ((ArrayNode) objectNode.get("array")).size());
+      Assert.assertEquals(12312, objectNode.get("num").asInt());
+    }
+  }
+
 }

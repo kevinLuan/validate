@@ -1,18 +1,19 @@
 package com.open.param.test;
 
-import com.open.json.api.JsonUtils;
-import com.open.param.Param;
-import com.open.param.ParamArray;
-import com.open.param.api.ApiHelper;
-import com.open.param.api.ApiUnknownNodeFilter;
 import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.open.json.api.JsonUtils;
 import com.open.param.DataType;
+import com.open.param.Param;
+import com.open.param.ParamArray;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
+import com.open.param.api.ApiUnknownNodeFilter;
+import com.open.param.validate.JsonValidate;
+import com.open.param.validate.RequestValidate;
 
 /**
  * 测试未知字段过滤器处理
@@ -43,16 +44,16 @@ public class TestUnknownNodeFilter {
     request.addParameter("result",
         "{\"name\":true,\"error\":true,\"remark\":\"remark\",\"extendProps\":[\"不符合邀请类型的属性\"],\"age\":1,\"items\":[{\"id\":1,\"name\":true,\"remark\":true,\"ERROR\":true,\"extendProps\":{\"abc\":12.2423}}],\"ids\":[1]}");
     Map<String, Object> map =
-        ApiHelper.request(param).setUnknownNodeFilter(ApiUnknownNodeFilter.INSTANCE)
-            .checkRequest(request).extractRequest(request);
+        RequestValidate.of(param).setUnknownNodeFilter(ApiUnknownNodeFilter.INSTANCE)
+            .check(request).extract(request);
     System.out.println(map);
     String expected =
         "{result={\"name\":true,\"remark\":\"remark\",\"age\":1,\"items\":[{\"id\":1,\"name\":true,\"extendProps\":{\"abc\":12.2423}}],\"ids\":[1]}}";
     Assert.assertEquals(expected, map.toString());
     JsonNode jsonNode = JsonUtils.parser(request.getParameter("result"));
-    map = ApiHelper.response(param).setUnknownNodeFilter(ApiUnknownNodeFilter.INSTANCE)
-        .checkResponse(jsonNode)
-        .extractResponse(jsonNode);
+    map = JsonValidate.of(param).setUnknownNodeFilter(ApiUnknownNodeFilter.INSTANCE)
+        .check(jsonNode)
+        .extract(jsonNode);
     System.out.println(map);
     expected =
         "{name=true, ids=[1], remark=\"remark\", items=[{\"id\":1,\"name\":true,\"extendProps\":{\"abc\":12.2423}}], age=1}";
