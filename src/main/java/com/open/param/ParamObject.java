@@ -2,7 +2,7 @@ package com.open.param;
 
 /**
  * 对象ObjectNode参数
- * 
+ *
  * @author KEVIN LUAN
  */
 public class ParamObject extends ParamBase {
@@ -41,7 +41,8 @@ public class ParamObject extends ParamBase {
     return new ParamObject(name, false, description, childrens);
   }
 
-  public boolean isObject() {
+  @Override
+  public final boolean isObject() {
     return true;
   }
 

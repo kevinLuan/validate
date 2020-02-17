@@ -2,9 +2,6 @@ package com.open.param;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.gson.JsonElement;
-import com.open.param.convert.DataParser;
-import com.open.param.convert.ParamConvert;
 
 /**
  * 参数定义
@@ -106,22 +103,4 @@ public interface Param {
   boolean isRequired();
 
   String getPath();
-
-  /**
-   * 将当前Param对象转换到java代码形式的定义
-   * 
-   * @return
-   */
-  default String asJavaCode() {
-    return ParamConvert.getJavaCode(this);
-  }
-
-  /**
-   * 获取当前Param定义的目标数据
-   * 
-   * @return
-   */
-  default JsonElement asJsonData() {
-    return DataParser.fromParamAsJsonData(this);
-  }
 }

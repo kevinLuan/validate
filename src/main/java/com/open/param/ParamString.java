@@ -1,7 +1,7 @@
 package com.open.param;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.open.param.convert.ParamConvert;
+import com.open.param.parser.GenerateCode;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -64,8 +64,8 @@ public class ParamString extends ParamPrimitive {
   @Override
   public final String toJavaCode() {
     StringBuilder builder = new StringBuilder();
-    String nameStr = ParamConvert.formatParam(name);
-    String descStr = ParamConvert.formatParam(description);
+    String nameStr = GenerateCode.formatParam(name);
+    String descStr = GenerateCode.formatParam(description);
     if (required) {
       if (StringUtils.isBlank(name) && StringUtils.isBlank(description)) {
         builder.append("ParamString.require(" + descStr + ")");
@@ -86,7 +86,7 @@ public class ParamString extends ParamPrimitive {
     } else if (max != null) {
       builder.append(".setMax(" + max + ")");
     }
-    builder.append(ParamConvert.buildExampleValue(this));
+    builder.append(GenerateCode.buildExampleValue(this));
     return builder.toString();
   }
 

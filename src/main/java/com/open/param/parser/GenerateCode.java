@@ -1,4 +1,4 @@
-package com.open.param.convert;
+package com.open.param.parser;
 
 import com.open.param.DataType;
 import com.open.param.Param;
@@ -7,20 +7,17 @@ import com.open.param.ParamBase;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
 
-/**
- * 将Param转换到JavaCode
- *
- * @author KEVIN LUAN
- */
-public class ParamConvert {
+public class GenerateCode {
 
   private final static String NEW_LINE = "\n";
 
+  public static String getJavaCode(String jsonData) {
+    Param param = ParamParser.parse(jsonData);
+    return getJavaCode(param);
+  }
+
   /**
-   * 将定义参数对象转化到JAVA代码
-   * 
-   * @param param
-   * @return
+   * 生成Java code
    */
   public static String getJavaCode(Param param) {
     StringBuilder builder = new StringBuilder();

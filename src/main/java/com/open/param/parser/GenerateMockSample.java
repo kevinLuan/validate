@@ -1,4 +1,4 @@
-package com.open.param.convert;
+package com.open.param.parser;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -13,18 +13,17 @@ import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
 
 /**
- * Param到json数据协议转换(注意不是序列化Param协议格式)
- * 
- * @author KEVIN LUAN
+ * 生成mock示例
  */
-public class DataParser {
+public class GenerateMockSample {
+
   /***
-   * 将Param转化到json数据协议
-   * 
+   * 获取param对象json数据格式
+   *
    * @param param
    * @return
    */
-  public static JsonElement fromParamAsJsonData(Param param) {
+  public static String getMockData(Param param) {
     JsonElement element = null;
     if (param.isArray()) {
       element = array(param.asArray());
@@ -35,7 +34,7 @@ public class DataParser {
     } else {
       throw new IllegalArgumentException("不支持的类型:" + param);
     }
-    return element;
+    return element.toString();
   }
 
   private static JsonObject object(ParamObject object) {

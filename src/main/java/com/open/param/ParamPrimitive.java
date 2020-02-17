@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.open.param.convert.ParamConvert;
+import com.open.param.parser.GenerateCode;
 import com.open.utils.ErrorUtils;
 
 /**
@@ -230,22 +230,22 @@ public class ParamPrimitive extends ParamBase {
     StringBuilder builder = new StringBuilder();
     if (name.length() > 0) {
       if (isRequired()) {
-        builder.append("ParamPrimitive.required(" + ParamConvert.formatParam(name) + ","
-            + ParamConvert.getType(dataType) + ","
-            + ParamConvert.formatParam(description) + ")");
+        builder.append("ParamPrimitive.required(" + GenerateCode.formatParam(name) + ","
+            + GenerateCode.getType(dataType) + ","
+            + GenerateCode.formatParam(description) + ")");
       } else {
-        builder.append("ParamPrimitive.of(" + ParamConvert.formatParam(name) + ","
-            + ParamConvert.getType(dataType) + ", "
-            + ParamConvert.formatParam(description) + ")");
+        builder.append("ParamPrimitive.of(" + GenerateCode.formatParam(name) + ","
+            + GenerateCode.getType(dataType) + ", "
+            + GenerateCode.formatParam(description) + ")");
       }
     } else {
       if (isRequired()) {
-        builder.append("ParamPrimitive.required(" + ParamConvert.getType(dataType) + ")");
+        builder.append("ParamPrimitive.required(" + GenerateCode.getType(dataType) + ")");
       } else {
-        builder.append("ParamPrimitive.of(" + ParamConvert.getType(dataType) + ")");
+        builder.append("ParamPrimitive.of(" + GenerateCode.getType(dataType) + ")");
       }
     }
-    builder.append(ParamConvert.buildExampleValue(this));
+    builder.append(GenerateCode.buildExampleValue(this));
     return builder.toString();
   }
 }

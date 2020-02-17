@@ -16,7 +16,9 @@ import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
 import com.open.param.ParamString;
 import com.open.param.api.ApiHelper;
-import com.open.param.convert.ParamParser;
+import com.open.param.parser.GenerateCode;
+import com.open.param.parser.GenerateMockSample;
+import com.open.param.parser.ParamParser;
 
 public class TestParamUtils {
 
@@ -72,12 +74,42 @@ public class TestParamUtils {
   }
 
   @Test
-  public void testGeneratedCode() {
+  public void testGeneratedJavaCode() {
     String json =
         "{\"name\":\"BeJson\",\"url\":\"http://www.bejson.com\",\"page\":88,\"isNonProfit\":true,\"address\":{\"street\":\"科技园路.\",\"city\":\"江苏苏州\",\"country\":\"中国\",\"arrayBoolean\":[true,false,true,false],\"arrayFloat\":[1.234,2.345],\"arrayString\":[\"篮球\",\"足球\"],\"arrayLong\":[1234234,234234],\"arrayObj\":[{\"name\":\"Google\",\"url\":\"http://www.google.com\"},{\"name\":\"Baidu\",\"url\":\"http://www.baidu.com\"},{\"name\":\"SoSo\",\"url\":\"http://www.SoSo.com\"}]},\"links\":[{\"name\":\"Google\",\"url\":\"http://www.google.com\"},{\"name\":\"Baidu\",\"url\":\"http://www.baidu.com\"},{\"name\":\"SoSo\",\"url\":\"http://www.SoSo.com\"}]}";
-    Param param = ParamParser.parse(json);
-    String code = param.asJavaCode();
-    System.out.println(code);
+    String javaCode = GenerateCode.getJavaCode(json);
+    System.out.println("JSON原始数据:"+json);
+    System.out.println("生成java代码:"+javaCode);
+    Param objParam = ParamObject.of(
+        ParamString.of("name", null).setExampleValue("BeJson"),
+        ParamString.of("url", null).setExampleValue("http://www.bejson.com"),
+        ParamNumber.of("page", null).setExampleValue(88),
+        ParamString.of("isNonProfit", null).setExampleValue("true"),
+        ParamObject.of("address", null,
+            ParamString.of("street", null).setExampleValue("科技园路."),
+            ParamString.of("city", null).setExampleValue("江苏苏州"),
+            ParamString.of("country", null).setExampleValue("中国"),
+            ParamArray.of("arrayBoolean", null,
+                ParamString.of(null).setExampleValue("true")),
+            ParamArray.of("arrayFloat", null,
+                ParamNumber.of(null).setExampleValue(1.234)),
+            ParamArray.of("arrayString", null,
+                ParamString.of(null).setExampleValue("篮球")),
+            ParamArray.of("arrayLong", null,
+                ParamNumber.of(null).setExampleValue(1234234)),
+            ParamArray.of("arrayObj", null,
+                ParamObject.of(
+                    ParamString.of("name", null).setExampleValue("Google"),
+                    ParamString.of("url", null).setExampleValue("http://www.google.com")))),
+        ParamArray.of("links", null,
+            ParamObject.of(
+                ParamString.of("name", null).setExampleValue("Google"),
+                ParamString.of("url", null).setExampleValue("http://www.google.com"))));
+
+    String actual = GenerateMockSample.getMockData(objParam);
+    System.out.println(actual);
+    String expected = "{\"name\":\"BeJson\",\"url\":\"http://www.bejson.com\",\"page\":88,\"isNonProfit\":\"true\",\"address\":{\"street\":\"科技园路.\",\"city\":\"江苏苏州\",\"country\":\"中国\",\"arrayBoolean\":[\"true\"],\"arrayFloat\":[1.234],\"arrayString\":[\"篮球\"],\"arrayLong\":[1234234],\"arrayObj\":[{\"name\":\"Google\",\"url\":\"http://www.google.com\"}]},\"links\":[{\"name\":\"Google\",\"url\":\"http://www.google.com\"}]}";
+    Assert.assertEquals(expected, actual);
   }
 
   @Test
@@ -97,7 +129,7 @@ public class TestParamUtils {
         ParamPrimitive.of("age", DataType.Number, "100.11")//
     );
 
-    String code = param.asJavaCode();
+    String code = GenerateCode.getJavaCode(param);
     System.out.println("生成Code:");
     System.out.println(code);
     String expected = "ParamObject.required(\n" + //
@@ -124,7 +156,7 @@ public class TestParamUtils {
     System.out.println("原始数据JSON:");
     System.out.println(json);
     Param param = ParamParser.parse(json);
-    String actual = param.asJsonData().toString();
+    String actual = GenerateMockSample.getMockData(param);
     System.out.println("反向解析到JSON:");
     System.out.println(actual);
     Assert.assertEquals(json, actual);
@@ -137,7 +169,7 @@ public class TestParamUtils {
     Param param = GsonSerialize.INSTANCE.decode(json, ParamBase.class);
     String expected =
         "{\"status\":{\"statusCode\":1500,\"statusReason\":\"参数错误\"},\"result\":{\"id\":\"1234\",\"name\":\"xxx\"}}";
-    String actual = param.asJsonData().toString();
+    String actual = GenerateMockSample.getMockData(param);
     System.out.println(actual);
     Assert.assertEquals(expected, actual);
   }
@@ -158,10 +190,9 @@ public class TestParamUtils {
             + ")\n"
             + "\n);";
     expected = expected.replace("'", "\"");
-    String actual = param.asJavaCode();
+    String actual = GenerateCode.getJavaCode(param);
     System.out.println(actual);
     Assert.assertEquals(expected, actual);
-
     {// 生成代码示例
       ParamObject.of(//
           ParamObject.of("status", "状态", //
