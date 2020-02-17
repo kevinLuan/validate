@@ -1,15 +1,28 @@
-package com.open.param;
+package com.open.param.convert;
+
+import com.open.param.DataType;
+import com.open.param.Param;
+import com.open.param.ParamArray;
+import com.open.param.ParamBase;
+import com.open.param.ParamObject;
+import com.open.param.ParamPrimitive;
 
 /**
  * 将Param转换到JavaCode
  *
  * @author KEVIN LUAN
  */
-public class ParamToCodeUtils {
+public class ParamConvert {
 
   private final static String NEW_LINE = "\n";
 
-  public static String fromParamAsJavaCode(Param param) {
+  /**
+   * 将定义参数对象转化到JAVA代码
+   * 
+   * @param param
+   * @return
+   */
+  public static String getJavaCode(Param param) {
     StringBuilder builder = new StringBuilder();
     if (param.isArray()) {
       parserArray(param.asArray(), builder);
@@ -44,7 +57,7 @@ public class ParamToCodeUtils {
       builder.append(stringBuilder + ")");
     } else if (children.isPrimitive()) {
       // 子节点
-      String childrenCode=children.asPrimitive().toJavaCode();
+      String childrenCode = children.asPrimitive().toJavaCode();
       // 子节点的父级节点
       String arrayNode;
       {
@@ -80,7 +93,7 @@ public class ParamToCodeUtils {
         StringBuilder childrenObjectBuilder = new StringBuilder();
         parserObject(param.asObject(), childrenObjectBuilder);
         nodeBuilder.append(childrenObjectBuilder.toString());
-        if(i<childrens.length-1){
+        if (i < childrens.length - 1) {
           nodeBuilder.append(",");
           newLine(nodeBuilder);
         }

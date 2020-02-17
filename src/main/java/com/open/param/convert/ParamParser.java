@@ -1,4 +1,4 @@
-package com.open.param;
+package com.open.param.convert;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -8,19 +8,23 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.open.param.Param;
+import com.open.param.ParamArray;
+import com.open.param.ParamBase;
+import com.open.param.ParamNumber;
+import com.open.param.ParamObject;
+import com.open.param.ParamPrimitive;
+import com.open.param.ParamString;
 
 /**
- * 将JSON协议转到到Param
- *
- * @author KEVIN LUAN
+ * JSON解析器
  */
-public class JsonToParamUtils {
-
+public class ParamParser {
   /**
    * 从JSON协议解析出参数定义对象
    */
-  public static Param fromJsonAsParam(String json) {
-    JsonElement element = new JsonParser().parse(json);
+  public static Param parse(String jsonData) {
+    JsonElement element = new JsonParser().parse(jsonData);
     Param param = null;
     if (element.isJsonArray()) {
       param = parserArray("", element.getAsJsonArray());

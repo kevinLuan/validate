@@ -1,6 +1,5 @@
 package com.open.param.test;
 
-import com.open.param.ParamNumber;
 import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,15 +8,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.open.json.api.GsonSerialize;
 import com.open.json.api.JsonUtils;
 import com.open.param.DataType;
-import com.open.param.JsonToParamUtils;
 import com.open.param.Param;
 import com.open.param.ParamArray;
 import com.open.param.ParamBase;
+import com.open.param.ParamNumber;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
 import com.open.param.ParamString;
-import com.open.param.ParamUtils;
 import com.open.param.api.ApiHelper;
+import com.open.param.convert.ParamParser;
 
 public class TestParamUtils {
 
@@ -26,7 +25,7 @@ public class TestParamUtils {
       throws JsonProcessingException, IOException {
     String json =
         "{\"name\":\"张三丰\",\"ids\":[100],\"items\":[{\"name\":\"手机\",\"id\":2}],\"age\":100.11}";
-    Param param = ParamUtils.fromJsonAsParam(json);
+    Param param = ParamParser.parse(json);
     // 修改参数验证范围
     param.asObject().getChildren()[0].asPrimitive().between(10, 20);
     try {
@@ -53,7 +52,7 @@ public class TestParamUtils {
   public void test_jsonToParam() {
     String json =
         "{\"name\":\"张三丰\",\"ids\":[100],\"items\":[{\"name\":\"手机\",\"id\":2}],\"age\":100.11}";
-    Param actual = ParamUtils.fromJsonAsParam(json);
+    Param actual = ParamParser.parse(json);
     Param expected = ParamObject.of(//
         ParamPrimitive.of("name", DataType.String, null).setExampleValue("张三丰"), //
         ParamArray.of("ids", null, //
@@ -68,15 +67,16 @@ public class TestParamUtils {
     );
     System.out.println(GsonSerialize.INSTANCE.encode(expected));
     System.out.println(GsonSerialize.INSTANCE.encode(actual));
-    Assert.assertEquals(GsonSerialize.INSTANCE.encode(actual),GsonSerialize.INSTANCE.encode(expected));
+    Assert.assertEquals(GsonSerialize.INSTANCE.encode(actual),
+        GsonSerialize.INSTANCE.encode(expected));
   }
 
   @Test
   public void testGeneratedCode() {
     String json =
         "{\"name\":\"BeJson\",\"url\":\"http://www.bejson.com\",\"page\":88,\"isNonProfit\":true,\"address\":{\"street\":\"科技园路.\",\"city\":\"江苏苏州\",\"country\":\"中国\",\"arrayBoolean\":[true,false,true,false],\"arrayFloat\":[1.234,2.345],\"arrayString\":[\"篮球\",\"足球\"],\"arrayLong\":[1234234,234234],\"arrayObj\":[{\"name\":\"Google\",\"url\":\"http://www.google.com\"},{\"name\":\"Baidu\",\"url\":\"http://www.baidu.com\"},{\"name\":\"SoSo\",\"url\":\"http://www.SoSo.com\"}]},\"links\":[{\"name\":\"Google\",\"url\":\"http://www.google.com\"},{\"name\":\"Baidu\",\"url\":\"http://www.baidu.com\"},{\"name\":\"SoSo\",\"url\":\"http://www.SoSo.com\"}]}";
-    Param param = ParamUtils.fromJsonAsParam(json);
-    String code = ParamUtils.fromParamAsJavaCode(param);
+    Param param = ParamParser.parse(json);
+    String code = param.asJavaCode();
     System.out.println(code);
   }
 
@@ -97,7 +97,7 @@ public class TestParamUtils {
         ParamPrimitive.of("age", DataType.Number, "100.11")//
     );
 
-    String code = ParamUtils.fromParamAsJavaCode(param);
+    String code = param.asJavaCode();
     System.out.println("生成Code:");
     System.out.println(code);
     String expected = "ParamObject.required(\n" + //
@@ -123,8 +123,8 @@ public class TestParamUtils {
         "{\"name\":\"张三丰\",\"ids\":[100],\"items\":[{\"name\":\"手机\",\"id\":2}],\"age\":100.11}";
     System.out.println("原始数据JSON:");
     System.out.println(json);
-    Param param = ParamUtils.fromJsonAsParam(json);
-    String actual = ParamUtils.fromParamAsJsonData(param);
+    Param param = ParamParser.parse(json);
+    String actual = param.asJsonData().toString();
     System.out.println("反向解析到JSON:");
     System.out.println(actual);
     Assert.assertEquals(json, actual);
@@ -137,7 +137,7 @@ public class TestParamUtils {
     Param param = GsonSerialize.INSTANCE.decode(json, ParamBase.class);
     String expected =
         "{\"status\":{\"statusCode\":1500,\"statusReason\":\"参数错误\"},\"result\":{\"id\":\"1234\",\"name\":\"xxx\"}}";
-    String actual = ParamUtils.fromParamAsJsonData(param);
+    String actual = param.asJsonData().toString();
     System.out.println(actual);
     Assert.assertEquals(expected, actual);
   }
@@ -158,7 +158,7 @@ public class TestParamUtils {
             + ")\n"
             + "\n);";
     expected = expected.replace("'", "\"");
-    String actual = ParamUtils.fromParamAsJavaCode(param);
+    String actual = param.asJavaCode();
     System.out.println(actual);
     Assert.assertEquals(expected, actual);
 

@@ -7,7 +7,7 @@ import com.open.param.ParamArray;
 import com.open.param.ParamBase;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
-import com.open.param.ParamUtils;
+import com.open.param.convert.ParamParser;
 
 public class TestApi {
 
@@ -33,13 +33,11 @@ public class TestApi {
     Param param1 = GsonSerialize.INSTANCE.decode(string, ParamBase.class);
     string = GsonSerialize.INSTANCE.encode(param1);
     System.out.println(string);
-    System.out.println(ParamUtils.fromParamAsJsonData(product));
+    System.out.println(product.asJsonData().toString());
     String json =
         "{\"name\":\"IPhone\",\"price\":5800.00,\"skus\":[{\"id\":123,\"name\":\"移动版\",\"code\":[{\"title\":\"土黄金\",\"id\":1000},{\"title\":\"黑色\",\"id\":1001}]}]}";
-    Param param = ParamUtils.fromJsonAsParam(json);
-    System.out.println(ParamUtils.fromParamAsJavaCode(param));
-    System.out.println(ParamUtils.fromParamAsJsonData(param));
-
-
+    Param param = ParamParser.parse(json);
+    System.out.println(param.asJavaCode());
+    System.out.println(product.asJsonData().toString());
   }
 }
