@@ -105,7 +105,7 @@ public class ParamString extends ParamPrimitive {
   }
 
   @Override
-  public Object parseRawValue(JsonNode node) {
+  public Object parseAndCheck(JsonNode node) {
     String value = asString().parseString(node);
     if (value == null) {
       if (this.required) {

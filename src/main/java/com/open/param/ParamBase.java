@@ -61,8 +61,7 @@ public class ParamBase implements Param {
     return allMatchs;
   }
 
-  public ParamBase() {
-  }
+  public ParamBase() {}
 
   public ParamBase(String name, boolean required, DataType dataType, String description) {
     this.name = name;
@@ -173,7 +172,7 @@ public class ParamBase implements Param {
   @SuppressWarnings("unchecked")
   protected boolean check(JsonNode node) {
     boolean ok = true;
-    Object value = parseRawValue(node);
+    Object value = parseAndCheck(node);
     if (allMatchs.length > 0) {
       ok = Arrays.asList(allMatchs).stream().anyMatch(validate -> validate.test(this, value));
     }
@@ -190,9 +189,9 @@ public class ParamBase implements Param {
   }
 
   /**
-   * 解析到原始目标类型
+   * 解析并转化到目标类型，并完基础验证逻辑(this.min,this.max)
    */
-  public Object parseRawValue(JsonNode value) {
+  protected Object parseAndCheck(JsonNode value) {
     return value;
   }
 

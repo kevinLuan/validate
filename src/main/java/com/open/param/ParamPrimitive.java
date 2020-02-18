@@ -183,17 +183,17 @@ public class ParamPrimitive extends ParamBase {
    * 解析目标类型的Value
    */
   @Override
-  public Object parseRawValue(JsonNode node) {
+  public Object parseAndCheck(JsonNode node) {
     if (dataType == DataType.Number) {
-      return asNumber().parseRawValue(node);
+      return asNumber().parseAndCheck(node);
     } else {
-      return asString().parseRawValue(node);
+      return asString().parseAndCheck(node);
     }
   }
 
   public Object parseRawValue(String value) {
     TextNode node = JsonNodeFactory.instance.textNode(value);
-    return parseRawValue(node);
+    return parseAndCheck(node);
   }
 
   public String toJavaCode() {
