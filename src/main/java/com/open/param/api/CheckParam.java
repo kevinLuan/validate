@@ -1,13 +1,15 @@
 package com.open.param.api;
 
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.open.json.api.JsonUtils;
 import com.open.param.Param;
 import com.open.param.ParamArray;
 import com.open.param.ParamObject;
-import org.apache.commons.lang3.StringUtils;
 
 class CheckParam {
 
@@ -43,7 +45,7 @@ class CheckParam {
       }
     }
     if (param.isPrimitive()) {
-      param.asPrimitive().parseRawValue(jsonNode);
+      param.asPrimitive().asserValue(jsonNode);
     } else if (param.isArray()) {
       check_array(param, jsonNode);
     } else if (param.isObject()) {
@@ -74,7 +76,8 @@ class CheckParam {
         }
       }
       if (param.isPrimitive()) {
-        param.asPrimitive().parseRawValue(value);
+        TextNode node = JsonNodeFactory.instance.textNode(value);
+        param.asPrimitive().asserValue(node);
       } else {
         JsonNode jsonNode = null;
         try {
@@ -96,25 +99,26 @@ class CheckParam {
   void check_array(Param param, JsonNode value) {
     if (param.isArray() && value.isArray()) {
       ParamArray array = param.asArray();
-      if (!array.existsChildrens()) {
-        return;// 没有子节点
-      }
-      Param children = array.getChildrenAsParam();
-      if (array.isRequired()) {
-        if (value.size() == 0) {
-          throw new IllegalArgumentException(param.getPath() + "[]不能为空");
+      if (array.existsChildrens()) {
+        Param children = array.getChildrenAsParam();
+        if (array.isRequired()) {
+          if (value.size() == 0) {
+            throw new IllegalArgumentException(param.getPath() + "[]不能为空");
+          }
+        }
+        for (int i = 0; i < value.size(); i++) {
+          JsonNode node = value.get(i);
+          if (children.isObjectValue()) {
+            check_object(children, (ObjectNode) node);
+          } else if (children.isPrimitive()) {
+            children.asPrimitive().asserValue(node);
+          } else {
+            throw new IllegalArgumentException("不支持的类型" + children);
+          }
         }
       }
-      for (int i = 0; i < value.size(); i++) {
-        JsonNode node = value.get(i);
-        if (children.isObjectValue()) {
-          check_object(children, (ObjectNode) node);
-        } else if (children.isPrimitive()) {
-          children.asPrimitive().parseRawValue(node);
-        } else {
-          throw new IllegalArgumentException("不支持的类型" + children);
-        }
-      }
+      // 用户自定义的验证
+      param.asArray().asserValue(value);
     } else {
       throw new IllegalArgumentException(getTipError(param.getPath()));
     }
@@ -142,11 +146,12 @@ class CheckParam {
       } else if (p.isArray()) {
         check_array(p, value);
       } else if (p.isPrimitive()) {
-        p.asPrimitive().parseRawValue(value);
+        p.asPrimitive().asserValue(value);
       } else {
         throw new IllegalArgumentException("不支持的类型:" + p);
       }
-
     }
+    // 用户自定义的验证
+    param.asObject().asserValue(objNode);
   }
 }

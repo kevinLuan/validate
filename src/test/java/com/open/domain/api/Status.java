@@ -5,15 +5,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Status implements Serializable {
+
   private static final long serialVersionUID = -8847081762490398492L;
   @JsonProperty("statusCode")
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private int statusCode = 0;
   @JsonProperty("statusReason")
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  private String statusReason="";
+  private String statusReason = "";
 
-  public Status() {}
+  public Status() {
+  }
 
   public Status(int statusCode, String message) {
     this.statusCode = statusCode;

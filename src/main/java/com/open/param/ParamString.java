@@ -1,8 +1,8 @@
 package com.open.param;
 
+import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.open.param.parser.GenerateCode;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * 原子参数（参数的最小单位）
@@ -92,10 +92,38 @@ public class ParamString extends ParamPrimitive {
 
   public String parseString(JsonNode node) {
     if (node.isValueNode()) {
-      return node.toString();
+      return node.asText();
     } else if (node.isMissingNode()) {
       return null;
     }
     throw new IllegalArgumentException("`" + this.getPath() + "`参数错误");
+  }
+
+  @Override
+  public final ParamString asString() {
+    return this;
+  }
+
+  @Override
+  public Object parseRawValue(JsonNode node) {
+    String value = asString().parseString(node);
+    if (value == null) {
+      if (this.required) {
+        throw new IllegalArgumentException("`" + this.getPath() + "`参数不能为空");
+      } else {
+        return value;
+      }
+    }
+    if (this.min != null) {
+      if (value.length() < min.intValue()) {
+        throw new IllegalArgumentException(getTipMsg());
+      }
+    }
+    if (this.max != null) {
+      if (value.length() > max.intValue()) {
+        throw new IllegalArgumentException(getTipMsg());
+      }
+    }
+    return value;
   }
 }

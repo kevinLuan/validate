@@ -7,11 +7,6 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.open.param.parser.GenerateCode;
 import com.open.utils.ErrorUtils;
 
-/**
- * 原子参数（参数的最小单位）
- *
- * @author KEVIN LUAN
- */
 public class ParamPrimitive extends ParamBase {
 
   public ParamPrimitive(String name, boolean required, DataType dataType, String description) {
@@ -35,7 +30,9 @@ public class ParamPrimitive extends ParamBase {
   }
 
   /**
-   * 创建一个必须参数 <p> 当前基本类型只能用在父节点是Array的情况例如：array[0,1,2]
+   * 创建一个必须参数
+   * <p>
+   * 当前基本类型只能用在父节点是Array的情况例如：array[0,1,2]
    */
   public static ParamPrimitive required(DataType dataType, String description) {
     return ParamPrimitive.make("", true, dataType, null, null, null);
@@ -49,7 +46,9 @@ public class ParamPrimitive extends ParamBase {
   }
 
   /**
-   * 创建一个非必须参数 <p> 当前基本类型只能用在父节点是Array的情况例如：array[0,1,2]
+   * 创建一个非必须参数
+   * <p>
+   * 当前基本类型只能用在父节点是Array的情况例如：array[0,1,2]
    */
   public static ParamPrimitive of(DataType dataType, String description) {
     return ParamPrimitive.make("", false, dataType, description, null, null);
@@ -112,7 +111,7 @@ public class ParamPrimitive extends ParamBase {
   public String getTipMsg(String path) {
     if (getDataType().isNumber()) {
       if (this.min != null && this.max != null) {
-        return "`" + path + "`限制范围" + min + "(含)~" + max + "(含)";
+        return "`" + path + "`限制范围" + min + "~" + max;
       } else if (this.min != null) {
         return "`" + path + "`必须大于等于" + min;
       } else if (this.max != null) {
@@ -122,7 +121,7 @@ public class ParamPrimitive extends ParamBase {
       }
     } else if (getDataType().isString()) {
       if (this.min != null && this.max != null) {
-        return "`" + path + "`长度限制在" + min + "(含)~" + max + "(含)";
+        return "`" + path + "`长度限制在" + min + "~" + max;
       } else if (this.min != null) {
         return "`" + path + "`长度必须大于等于" + min;
       } else if (this.max != null) {
@@ -156,16 +155,26 @@ public class ParamPrimitive extends ParamBase {
 
   public ParamNumber asNumber() {
     if (this.dataType == DataType.Number) {
-      return (ParamNumber) ParamNumber.make(name, required, description).between(min, max)
-          .setParentNode(parentNode);
+      return ParamNumber.make(name, required, description)
+          .between(min, max)
+          .setParentNode(parentNode)
+          .anyMatch(this.getAnyMatchRules())
+          .allMatch(this.getAllMatchRule())
+          .asPrimitive().setExampleValue(exampleValue).asNumber();
+
+
     }
     throw ErrorUtils.newClassCastException(this.getClass(), ParamNumber.class);
   }
 
   public ParamString asString() {
     if (this.dataType == DataType.String) {
-      return (ParamString) ParamString.make(name, required, description).between(min, max)
-          .setParentNode(parentNode);
+      return ParamString.make(name, required, description)
+          .between(min, max)
+          .setParentNode(parentNode)
+          .anyMatch(this.getAnyMatchRules())
+          .allMatch(this.getAllMatchRule())
+          .asPrimitive().setExampleValue(exampleValue).asString();
     }
     throw ErrorUtils.newClassCastException(this.getClass(), ParamString.class);
   }
@@ -173,47 +182,12 @@ public class ParamPrimitive extends ParamBase {
   /**
    * 解析目标类型的Value
    */
+  @Override
   public Object parseRawValue(JsonNode node) {
     if (dataType == DataType.Number) {
-      Number number = asNumber().parseNumber(node);
-      if (number == null) {
-        if (this.required) {
-          throw new IllegalArgumentException("`" + this.getPath() + "`参数缺失");
-        } else {
-          return null;
-        }
-      }
-      if (this.min != null) {
-        if (number.longValue() < min.longValue() || number.doubleValue() < min.doubleValue()) {
-          throw new IllegalArgumentException(getTipMsg());
-        }
-      }
-      if (this.max != null) {
-        if (number.longValue() > max.longValue() || number.doubleValue() > max.doubleValue()) {
-          throw new IllegalArgumentException(getTipMsg());
-        }
-      }
-      return number;
+      return asNumber().parseRawValue(node);
     } else {
-      String value = asString().parseString(node);
-      if (StringUtils.isBlank(value)) {
-        if (this.required) {
-          throw new IllegalArgumentException("`" + this.getPath() + "`参数不能为空");
-        } else {
-          return value;
-        }
-      }
-      if (this.min != null) {
-        if (value.length() < min.intValue()) {
-          throw new IllegalArgumentException(getTipMsg());
-        }
-      }
-      if (this.max != null) {
-        if (value.length() > max.intValue()) {
-          throw new IllegalArgumentException(getTipMsg());
-        }
-      }
-      return value;
+      return asString().parseRawValue(node);
     }
   }
 

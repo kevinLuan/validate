@@ -60,7 +60,8 @@ public class TestParam {
   }
 
   @Before
-  public void before() {}
+  public void before() {
+  }
 
   @Test
   public void test_filter_object() {
@@ -98,12 +99,12 @@ public class TestParam {
     try {
       String a1 = DataResult
           .make("T",
-              new Object[] {
+              new Object[]{
                   DataResult.success(
-                      new Object[] {DataResult.make("S", "OK").addResult("city", "北京")})
+                      new Object[]{DataResult.make("S", "OK").addResult("city", "北京")})
               })
           .toJSON();
-      String b1 = DataResult.make("B", DataResult.success(new Object[] {DataResult.success("OK")}))
+      String b1 = DataResult.make("B", DataResult.success(new Object[]{DataResult.success("OK")}))
           .toJSON();
       System.out.println(a1);
       System.out.println(b1);
@@ -137,15 +138,15 @@ public class TestParam {
     System.out.println("------------");
     {
       DataResult<?> data = DataResult.make("T",
-          new Object[] {DataResult.success(
-              new Object[] {DataResult.make("S", "OK").addResult("city", "北京")})});
+          new Object[]{DataResult.success(
+              new Object[]{DataResult.make("S", "OK").addResult("city", "北京")})});
       String a1 = data.toJSON();
-      String b1 = DataResult.make("B", DataResult.success(new Object[] {DataResult.success("OK")}))
+      String b1 = DataResult.make("B", DataResult.success(new Object[]{DataResult.success("OK")}))
           .toJSON();
       MockHttpServletRequest request = new MockHttpServletRequest();
       request.addParameter("A1", a1);
       request.addParameter("B1", b1);
-      request.addParameter("list", JsonUtils.stringify(new Object[] {data, data}));
+      request.addParameter("list", JsonUtils.stringify(new Object[]{data, data}));
       System.out.println(a1);
       System.out.println(b1);
       System.out.println(request.getParameter("list"));
@@ -303,8 +304,8 @@ public class TestParam {
     request.addParameter("price_min", "7.19");
     request.addParameter("price_max", "20.00001");
     {
-      ParamPrimitive param = ParamPrimitive.required("price", DataType.Number, "价格").setMin(8)
-          .setMax(20);
+      ParamPrimitive param = ParamPrimitive.required("price", DataType.Number, "价格")
+          .setMin(8).setMax(20);
       try {
         RequestValidate.of(param).check(request);
         Assert.fail("没有出现预期错误");
@@ -535,7 +536,7 @@ public class TestParam {
             RequestValidate.of(param).check(request);
             Assert.fail("没有出现预期错误");
           } catch (Exception e) {
-            Assert.assertEquals("`objParam.items.ids`限制范围10(含)~100(含)", e.getMessage());
+            Assert.assertEquals("`objParam.items.ids`限制范围10~100", e.getMessage());
           }
         }
       }
@@ -655,10 +656,10 @@ public class TestParam {
     try {
       String a1 = DataResult
           .make("T",
-              new Object[] {DataResult.success(
-                  new Object[] {DataResult.make("S", "OK").addResult("city", "北京")})})
+              new Object[]{DataResult.success(
+                  new Object[]{DataResult.make("S", "OK").addResult("city", "北京")})})
           .toJSON();
-      String b1 = DataResult.make("B", DataResult.success(new Object[] {DataResult.success("OK")}))
+      String b1 = DataResult.make("B", DataResult.success(new Object[]{DataResult.success("OK")}))
           .toJSON();
       System.out.println(a1);
       System.out.println(b1);

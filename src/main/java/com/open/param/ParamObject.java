@@ -18,9 +18,9 @@ public class ParamObject extends ParamBase {
       for (int i = 0; i < childrens.length; i++) {
         Param param = childrens[i];
         this.children[i] = (ParamBase) param;
-//        if (param.isObjectValue()) {
-//          throw new IllegalArgumentException("ParamObject子节点Name不能为空");
-//        }
+        // if (param.isObjectValue()) {
+        // throw new IllegalArgumentException("ParamObject子节点Name不能为空");
+        // }
       }
     }
   }
@@ -47,7 +47,7 @@ public class ParamObject extends ParamBase {
   }
 
   @Override
-  public ParamObject asObject() {
+  public final ParamObject asObject() {
     return this;
   }
 
@@ -58,4 +58,5 @@ public class ParamObject extends ParamBase {
   public Param[] getChildren() {
     return children;
   }
-}
+
+  }

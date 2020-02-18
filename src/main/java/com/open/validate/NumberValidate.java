@@ -3,6 +3,9 @@ package com.open.validate;
 import com.open.param.ParamNumber;
 
 public class NumberValidate implements Validate<ParamNumber, Number> {
+  public static NumberValidate INSTANCE = new NumberValidate();
+
+  private NumberValidate() {}
 
   @Override
   public boolean test(ParamNumber p, Number value) {
@@ -32,7 +35,6 @@ public class NumberValidate implements Validate<ParamNumber, Number> {
       throw new IllegalArgumentException(p.getTipMsg());
     }
   }
-
 
 
   public static void throwError(ParamNumber param) {

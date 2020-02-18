@@ -1,7 +1,6 @@
 package com.open.param.api;
 
 import java.util.List;
-
 import com.open.param.Param;
 import com.open.param.ParamArray;
 import com.open.param.ParamObject;

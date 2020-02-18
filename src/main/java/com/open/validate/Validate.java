@@ -17,5 +17,11 @@ public interface Validate<P extends Param, T> {
    */
   boolean test(P p, T value);
 
+  /**
+   * 验证自定义规则
+   * 
+   * @param p
+   * @param value
+   */
   void assertValue(P p, T value);
 }

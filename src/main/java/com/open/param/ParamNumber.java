@@ -1,8 +1,8 @@
 package com.open.param;
 
+import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.open.param.parser.GenerateCode;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * 原子参数（参数的最小单位）
@@ -94,7 +94,7 @@ public class ParamNumber extends ParamPrimitive {
     return builder.toString();
   }
 
-  public Number parseNumber(JsonNode node) {
+  private Number parseNumber(JsonNode node) {
     if (node.isValueNode()) {
       if (node.isNumber()) {
         if (node.isDouble() || node.isFloat()) {
@@ -104,7 +104,7 @@ public class ParamNumber extends ParamPrimitive {
           return node.asLong();
         }
       } else if (node.isTextual()) {
-        return parseNumber(node.textValue());
+        return parseNumber(node.asText());
       }
     } else if (node.isMissingNode()) {
       return null;
@@ -112,7 +112,10 @@ public class ParamNumber extends ParamPrimitive {
     throw new IllegalArgumentException("`" + this.getPath() + "`参数错误");
   }
 
-  public Number parseNumber(String value) {
+  /**
+   * 解析Value
+   */
+  private Number parseNumber(String value) {
     try {
       if (value.indexOf(".") != -1) {
         return Double.parseDouble(value);
@@ -138,5 +141,34 @@ public class ParamNumber extends ParamPrimitive {
       }
     }
   }
+
+  @Override
+  public Object parseRawValue(JsonNode node) {
+    Number number = asNumber().parseNumber(node);
+    if (number == null) {
+      if (this.required) {
+        throw new IllegalArgumentException("`" + this.getPath() + "`参数缺失");
+      } else {
+        return null;
+      }
+    }
+    if (this.min != null) {
+      if (number.longValue() < min.longValue() || number.doubleValue() < min.doubleValue()) {
+        throw new IllegalArgumentException(getTipMsg());
+      }
+    }
+    if (this.max != null) {
+      if (number.longValue() > max.longValue() || number.doubleValue() > max.doubleValue()) {
+        throw new IllegalArgumentException(getTipMsg());
+      }
+    }
+    return number;
+  }
+
+  @Override
+  public final ParamNumber asNumber() {
+    return this;
+  }
+
 
 }

@@ -1,5 +1,6 @@
 package com.open.param.api;
 
+import com.open.param.ParamBase;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,7 @@ public class ParentReference {
   }
 
   private static void arrayParam(ParamArray array, Param parent) {
-    array.setParentNode(parent);
+    array.setParentNode((ParamBase) parent);
     if (array.existsChildrens()) {
       Param pm = array.getChildrenAsParam();
       if (pm.isObject()) {
@@ -55,7 +56,7 @@ public class ParentReference {
   }
 
   private static void objectParam(ParamObject object, Param parent) {
-    object.setParentNode(parent);
+    object.setParentNode((ParamBase) parent);
     if (object.existsChildrens()) {
       for (Param pm : object.getChildren()) {
         if (pm.isObject()) {

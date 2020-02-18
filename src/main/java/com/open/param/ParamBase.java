@@ -1,18 +1,24 @@
 package com.open.param;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.open.utils.ErrorUtils;
-import com.open.json.api.GsonSerialize;
+import java.util.Arrays;
+import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.open.json.api.GsonSerialize;
+import com.open.utils.ErrorUtils;
+import com.open.validate.Validate;
 
+@SuppressWarnings("rawtypes")
 public class ParamBase implements Param {
 
   protected String name;
   protected boolean required;
   protected DataType dataType;
   protected String description;
+  @JsonIgnore
   // 父亲节点
-  public transient Param parentNode;
+  protected transient ParamBase parentNode;
 
   // 子节点(ParamArray,ParamObject)
   ParamBase[] children = new ParamBase[0];
@@ -24,8 +30,39 @@ public class ParamBase implements Param {
    * 示例值(只有ParamPrimitive类型节点才会有效)
    */
   String exampleValue;
+  // 任意匹配
+  protected Validate[] anyMatchs = new Validate[0];
+  // 全部匹配
+  protected Validate[] allMatchs = new Validate[0];
 
-  public ParamBase() {}
+  @Override
+  public Param anyMatch(Validate... rules) {
+    Objects.requireNonNull(rules, "`rules`不能为空");
+    this.anyMatchs = rules;
+    dataType.assertValidate(rules);
+    return this;
+  }
+
+  @Override
+  public Param allMatch(Validate... rules) {
+    Objects.requireNonNull(rules, "`rules`不能为空");
+    this.allMatchs = rules;
+    dataType.assertValidate(rules);
+    return this;
+  }
+
+  @Override
+  public Validate[] getAnyMatchRules() {
+    return anyMatchs;
+  }
+
+  @Override
+  public Validate[] getAllMatchRule() {
+    return allMatchs;
+  }
+
+  public ParamBase() {
+  }
 
   public ParamBase(String name, boolean required, DataType dataType, String description) {
     this.name = name;
@@ -40,49 +77,15 @@ public class ParamBase implements Param {
     this.dataType = dataType;
   }
 
-  public String getName() {
-    return name;
-  }
-
-  public boolean isRequired() {
-    return required;
-  }
-
-  public DataType getDataType() {
-    return dataType;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public void setRequired(boolean required) {
-    this.required = required;
-  }
-
-  public void setDataType(DataType dataType) {
-    this.dataType = dataType;
-  }
-
   public ParamBase setDescription(String description) {
     this.description = description;
     return this;
   }
 
   @Override
-  public final Param setParentNode(Param parentNode) {
+  public final Param setParentNode(ParamBase parentNode) {
     this.parentNode = parentNode;
     return this;
-  }
-
-  @Override
-  @JsonIgnore
-  public final Param getParentNode() {
-    return parentNode;
   }
 
   public final String getPath() {
@@ -121,12 +124,14 @@ public class ParamBase implements Param {
   @Override
   public ParamArray asArray() {
     if (isArray()) {
-      ParamBase param = null;
+      Param param = null;
       if (children != null && children.length > 0) {
         param = children[0];
       }
-      return (ParamArray) new ParamArray(name, required, description, param)
-          .setParentNode(this.parentNode);
+      return new ParamArray(name, required, description, param)
+          .anyMatch(this.getAnyMatchRules())
+          .allMatch(this.getAllMatchRule())
+          .setParentNode(this.parentNode).asArray();
     }
     throw ErrorUtils.newClassCastException(this.getClass(), ParamArray.class);
   }
@@ -134,7 +139,11 @@ public class ParamBase implements Param {
   @Override
   public ParamObject asObject() {
     if (isObject()) {
-      return new ParamObject(name, required, description, children);
+      return new ParamObject(name, required, description, children)
+          .setParentNode(this.parentNode)
+          .anyMatch(this.getAnyMatchRules())
+          .allMatch(this.getAllMatchRule())
+          .asObject();
     }
     throw ErrorUtils.newClassCastException(this.getClass(), ParamObject.class);
   }
@@ -142,9 +151,11 @@ public class ParamBase implements Param {
   @Override
   public ParamPrimitive asPrimitive() {
     if (isPrimitive()) {
-      return (ParamPrimitive) new ParamPrimitive(name, required, dataType, description)
-          .between(min, max)
-          .setExampleValue(exampleValue).setParentNode(this.parentNode);
+      return new ParamPrimitive(name, required, dataType, description)
+          .between(min, max).setExampleValue(exampleValue)
+          .setParentNode(this.parentNode)
+          .anyMatch(this.getAnyMatchRules())
+          .allMatch(this.getAllMatchRule()).asPrimitive();
     }
     throw ErrorUtils.newClassCastException(this.getClass(), ParamPrimitive.class);
   }
@@ -156,4 +167,64 @@ public class ParamBase implements Param {
     return this_json.equals(input_json);
   }
 
+  /**
+   * 验证数据
+   */
+  @SuppressWarnings("unchecked")
+  protected boolean check(JsonNode node) {
+    boolean ok = true;
+    Object value = parseRawValue(node);
+    if (allMatchs.length > 0) {
+      ok = Arrays.asList(allMatchs).stream().anyMatch(validate -> validate.test(this, value));
+    }
+    if (ok & anyMatchs.length > 0) {
+      ok = Arrays.asList(anyMatchs).stream().anyMatch(validate -> validate.test(this, value));
+    }
+    return ok;
+  }
+
+  public final void asserValue(JsonNode node) {
+    if (!check(node)) {
+      throw new IllegalArgumentException("`" + getPath() + "`参数无效");
+    }
+  }
+
+  /**
+   * 解析到原始目标类型
+   */
+  public Object parseRawValue(JsonNode value) {
+    return value;
+  }
+
+  public Param getParentNode() {
+    return parentNode;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public DataType getDataType() {
+    return dataType;
+  }
+
+  public void setDataType(DataType dataType) {
+    this.dataType = dataType;
+  }
+
+  public boolean isRequired() {
+    return required;
+  }
+
+  public void setRequired(boolean required) {
+    this.required = required;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 }

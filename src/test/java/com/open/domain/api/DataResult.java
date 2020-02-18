@@ -1,11 +1,11 @@
 package com.open.domain.api;
 
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 通用RPC数据序列化传递对象
