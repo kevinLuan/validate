@@ -1,4 +1,4 @@
-package com.open.param.api;
+package com.open.param.core;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 

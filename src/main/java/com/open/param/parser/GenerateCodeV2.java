@@ -1,0 +1,155 @@
+package com.open.param.parser;
+
+import org.apache.commons.lang3.StringUtils;
+import com.open.param.Param;
+import com.open.param.ParamArray;
+import com.open.param.ParamBase;
+import com.open.param.ParamObject;
+import com.open.param.ParamPrimitive;
+
+public class GenerateCodeV2 {
+
+  private final static String NEW_LINE = "\n";
+  public static GenerateCodeV2 INSTANCE = new GenerateCodeV2();
+
+  public String getJavaCode(String jsonData) {
+    Param param = JsonConverter.INSTANCE.convert(jsonData);
+    return getJavaCode(param);
+  }
+
+  /**
+   * 生成Java code
+   */
+  public String getJavaCode(Param param) {
+    String result = null;
+    if (param.isArray()) {
+      result = parserArray(param.asArray());
+    } else if (param.isObject()) {
+      result = parserObject(param.asObject());
+    } else if (param.isPrimitive()) {
+      result = parserPrimitive(param.asPrimitive());
+    } else {
+      throw new IllegalArgumentException("不支持的参数:`" + param + "`");
+    }
+    if (result != null && result.endsWith("\n")) {
+      result = result.substring(0, result.length() - 1);
+    }
+    return result + ";";
+  }
+
+  private String parserArray(ParamArray array) {
+    StringBuilder builder = new StringBuilder();
+    String name = array.getName();
+    String description = array.getDescription();
+    ParamBase children = (ParamBase) array.getChildrenAsParam();
+    if (array.isRequired()) {
+      builder.append("ParamApi.array(true)");
+    } else {
+      builder.append("ParamApi.array()");
+    }
+    builder.append(appendNameAndDesc(name, description));
+    if (children.isObject()) {
+      builder.append(NEW_LINE);
+      builder.append("." + parserObject(children.asObject()));
+    } else if (children.isPrimitive()) {
+      builder.append(NEW_LINE);
+      builder.append("." + parserPrimitive(children.asPrimitive()));
+    } else {
+      throw new IllegalArgumentException("不支持的类型:" + children);
+    }
+    return builder.toString();
+  }
+
+  private String appendNameAndDesc(String name, String description) {
+    StringBuilder builder = new StringBuilder();
+    if (StringUtils.isNotBlank(name)) {
+      builder.append(".name(\"" + name + "\")");
+    }
+    if (StringUtils.isNotBlank(description)) {
+      builder.append(".description(\"" + description + "\")");
+    }
+    if (builder.length() > 0) {
+      return builder.toString() + "\n";
+    }
+    return "";
+  }
+
+  private String parserObject(ParamObject object) {
+    StringBuilder builder = new StringBuilder();
+    if (object.isRequired()) {
+      builder.append("ParamApi.object(true)");
+    } else {
+      builder.append("ParamApi.object()");
+    }
+    builder.append(appendNameAndDesc(object.getName(), object.getDescription()));
+    builder.append(childrenParam(object, object.getChildren()));
+    newLine(builder);
+    return builder.toString();
+  }
+
+  private String childrenParam(Param parent, Param[] childrens) {
+    StringBuilder builder = new StringBuilder();
+    if (childrens.length > 0) {
+      builder.append(".children(").append("\n");
+      for (int i = 0; i < childrens.length; i++) {
+        Param param = childrens[i];
+        if (param.isArray()) {
+          newLine(builder);
+          builder.append(parserArray(param.asArray()));
+        } else if (param.isObject()) {
+          builder.append(parserObject(param.asObject()));
+        } else if (param.isPrimitive()) {
+          builder.append(parserPrimitive(param.asPrimitive()));
+        } else {
+          throw new IllegalArgumentException("不支持的类型`" + param.getDataType() + "`");
+        }
+        if (i < childrens.length - 1) {
+          builder.append(",");
+          newLine(builder);
+        }
+      }
+      builder.append(")\n");
+    }
+    return builder.toString();
+  }
+
+  private String newLine(StringBuilder builder) {
+    if (!builder.toString().endsWith(NEW_LINE)) {
+      builder.append(NEW_LINE);
+    }
+    return builder.toString();
+  }
+
+  private String parserPrimitive(ParamPrimitive primitive) {
+    StringBuilder sb = new StringBuilder();
+    if (primitive.isNumber()) {
+      if (primitive.isRequired()) {
+        sb.append("ParamApi.number(true)");
+      } else {
+        sb.append("ParamApi.number()");
+      }
+    } else if (primitive.isString()) {
+      if (primitive.isRequired()) {
+        sb.append("ParamApi.string(true)");
+      } else {
+        sb.append("ParamApi.string()");
+      }
+    }
+    sb.append(appendNameAndDesc(primitive.getName(), primitive.getDescription()));
+    sb.append(buildExampleValue(primitive));
+    return sb.toString() + "\n";
+  }
+
+  private String buildExampleValue(ParamPrimitive primitive) {
+    if (primitive.getExampleValue() != null) {
+      if (primitive.getDataType().isNumber()) {
+        return ".exampleValue(" + primitive.getExampleValue() + ")";
+      } else {
+        return ".exampleValue(\"" + primitive.getExampleValue() + "\")";
+      }
+    } else {
+      return "";
+    }
+  }
+
+}

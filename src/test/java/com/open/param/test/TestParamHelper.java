@@ -8,13 +8,13 @@ import com.open.param.ParamNumber;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
 import com.open.param.ParamString;
+import com.open.param.api.ArrayApi;
+import com.open.param.api.NumberApi;
+import com.open.param.api.ObjectApi;
+import com.open.param.api.ParamApi;
+import com.open.param.api.StringApi;
 import com.open.param.parser.GenerateCode;
 import com.open.param.parser.ParamSerializable;
-import com.open.param.v2.ArrayType;
-import com.open.param.v2.NumberType;
-import com.open.param.v2.ObjectType;
-import com.open.param.v2.ParamApi;
-import com.open.param.v2.StringType;
 import com.open.utils.ParamExec;
 import com.open.utils.ParamHelper;
 import org.junit.Assert;
@@ -47,7 +47,7 @@ public class TestParamHelper {
                 ParamApi.number(true).name("id").description("商品ID").min(1).max(10),
                 ParamApi.string(true).name("name").description("商品名称").max(50))),
         ParamApi.array(true).name("ids").description("id列表").children(
-            NumberType.create().required().max(100)));
+            NumberApi.create().required().max(100)));
   }
 
   @Test

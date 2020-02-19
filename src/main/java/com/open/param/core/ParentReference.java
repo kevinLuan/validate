@@ -1,4 +1,4 @@
-package com.open.param.api;
+package com.open.param.core;
 
 import com.open.param.ParamBase;
 import java.util.List;

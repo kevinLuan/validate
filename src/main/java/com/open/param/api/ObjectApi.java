@@ -1,4 +1,4 @@
-package com.open.param.v2;
+package com.open.param.api;
 
 import com.open.param.DataType;
 import com.open.param.Param;
@@ -10,34 +10,34 @@ import com.open.param.ParamObject;
  *
  * @author KEVIN LUAN
  */
-public class ObjectType extends ParamObject {
-  ObjectType() {
+public final class ObjectApi extends ParamObject {
+  ObjectApi() {
     super();
   }
 
-  public static ObjectType create() {
-    ObjectType obj = new ObjectType();
+  public static ObjectApi create() {
+    ObjectApi obj = new ObjectApi();
     obj.dataType = DataType.Object;
-    obj.name="";
+    obj.name = "";
     return obj;
   }
 
-  public ObjectType name(String name) {
+  public ObjectApi name(String name) {
     super.setName(name);
     return this;
   }
 
-  public ObjectType required() {
+  public ObjectApi required() {
     super.required = true;
     return this;
   }
 
-  public ObjectType description(String desc) {
+  public ObjectApi description(String desc) {
     super.description = desc;
     return this;
   }
 
-  public ObjectType children(Param... childrens) {
+  public ObjectApi children(Param... childrens) {
     this.children = new ParamBase[childrens.length];
     for (int i = 0; i < childrens.length; i++) {
       Param param = childrens[i];

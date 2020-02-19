@@ -3,9 +3,9 @@ package com.open.param.validate;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import com.open.param.Param;
-import com.open.param.api.ApiCheck;
-import com.open.param.api.ApiParams;
-import com.open.param.api.UnknownNodeFilter;
+import com.open.param.core.ApiCheck;
+import com.open.param.core.ApiParams;
+import com.open.param.core.UnknownNodeFilter;
 
 public class RequestValidate {
   final ApiCheck<HttpServletRequest> apiCheck;

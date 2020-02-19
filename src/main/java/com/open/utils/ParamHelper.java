@@ -3,8 +3,8 @@ package com.open.utils;
 import com.open.param.Param;
 import com.open.param.ParamArray;
 import com.open.param.ParamObject;
-import com.open.param.api.AdjustParamInstance;
-import com.open.param.api.ParentReference;
+import com.open.param.core.AdjustParamInstance;
+import com.open.param.core.ParentReference;
 
 public class ParamHelper {
 	public Param[] params;

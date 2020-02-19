@@ -1,4 +1,4 @@
-package com.open.param.v2;
+package com.open.param.api;
 
 import com.open.param.DataType;
 import com.open.param.ParamNumber;
@@ -8,44 +8,43 @@ import com.open.param.ParamNumber;
  *
  * @author KEVIN LUAN
  */
-public class StringType extends ParamNumber {
+public final class NumberApi extends ParamNumber {
 
-  public StringType() {
-  }
+  public NumberApi() {}
 
-  public static StringType create() {
-    StringType primitive = new StringType();
+  public static NumberApi create() {
+    NumberApi primitive = new NumberApi();
     primitive.dataType = DataType.String;
-    primitive.name="";
+    primitive.name = "";
     return primitive;
   }
 
-  public StringType name(String name) {
+  public NumberApi name(String name) {
     super.setName(name);
     return this;
   }
 
-  public StringType required() {
+  public NumberApi required() {
     super.required = true;
     return this;
   }
 
-  public StringType description(String desc) {
+  public NumberApi description(String desc) {
     super.description = desc;
     return this;
   }
 
-  public StringType exampleValue(Object exampleValue) {
+  public NumberApi exampleValue(Object exampleValue) {
     super.setExampleValue(exampleValue);
     return this;
   }
 
-  public StringType min(Number min) {
+  public NumberApi min(Number min) {
     super.setMin(min);
     return this;
   }
 
-  public StringType max(Number max) {
+  public NumberApi max(Number max) {
     super.setMax(max);
     return this;
   }

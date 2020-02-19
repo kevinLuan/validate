@@ -1,5 +1,6 @@
 package com.open.param.test;
 
+import com.open.param.parser.GenerateCodeV2;
 import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import com.open.param.ParamNumber;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
 import com.open.param.ParamString;
+import com.open.param.api.ParamApi;
 import com.open.param.parser.GenerateCode;
 import com.open.param.parser.GenerateMockSample;
 import com.open.param.parser.JsonConverter;
@@ -208,4 +210,53 @@ public class TestParamUtils {
       );
     }
   }
+
+  @Test
+  public void test_fromParamAsJavaCodeV2() {
+    String json =
+        "{\"dataType\":\"Object\",\"children\":[{\"name\":\"status\",\"description\":\"状态\",\"dataType\":\"Object\",\"children\":[{\"name\":\"statusCode\",\"description\":\"状态码\",\"exampleValue\":\"1500\",\"dataType\":\"Number\"},{\"name\":\"statusReason\",\"description\":\"状态描述\",\"exampleValue\":\"参数错误\",\"dataType\":\"String\"}]},{\"name\":\"result\",\"description\":\"结果\",\"dataType\":\"Object\",\"children\":[{\"name\":\"id\",\"description\":\"ID\",\"exampleValue\":\"1234\",\"dataType\":\"Number\"},{\"name\":\"name\",\"description\":\"名称\",\"exampleValue\":\"xxx\",\"dataType\":\"String\"}]}]}";
+    Param param = ParamSerializable.INSTANCE.decode(json);
+    {
+      String expected =
+          "ParamObject.of(ParamObject.of(\"status\",\"状态\",\n"
+              + "ParamNumber.of(\"statusCode\",\"状态码\").setExampleValue(1500),\n"
+              + "ParamString.of(\"statusReason\",\"状态描述\").setExampleValue(\"参数错误\")\n"
+              + ")\n"
+              + ",\n"
+              + "ParamObject.of(\"result\",\"结果\",\n"
+              + "ParamNumber.of(\"id\",\"ID\").setExampleValue(1234),\n"
+              + "ParamString.of(\"name\",\"名称\").setExampleValue(\"xxx\")\n"
+              + ")\n"
+              + ");";
+      expected = expected.replace("'", "\"");
+      String actual = GenerateCode.getJavaCode(param);
+      System.out.println(actual);
+      Assert.assertEquals(expected, actual);
+    }
+    {
+      String expected = "ParamApi.object().children(\n"
+          + "ParamApi.object().name(\"status\").description(\"状态\")\n"
+          + ".children(\n"
+          + "ParamApi.number().name(\"statusCode\").description(\"状态码\")\n"
+          + ".exampleValue(1500)\n"
+          + ",\n"
+          + "ParamApi.string().name(\"statusReason\").description(\"状态描述\")\n"
+          + ".exampleValue(\"参数错误\")\n"
+          + ")\n"
+          + ",\n"
+          + "ParamApi.object().name(\"result\").description(\"结果\")\n"
+          + ".children(\n"
+          + "ParamApi.number().name(\"id\").description(\"ID\")\n"
+          + ".exampleValue(1234)\n"
+          + ",\n"
+          + "ParamApi.string().name(\"name\").description(\"名称\")\n"
+          + ".exampleValue(\"xxx\")\n"
+          + ")\n"
+          + ");";
+      String actual = GenerateCodeV2.INSTANCE.getJavaCode(param);
+      System.out.println(actual);
+      Assert.assertEquals(expected, actual);
+    }
+  }
+
 }

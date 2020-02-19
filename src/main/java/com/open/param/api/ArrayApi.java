@@ -1,4 +1,4 @@
-package com.open.param.v2;
+package com.open.param.api;
 
 import org.apache.commons.lang3.StringUtils;
 import com.open.param.DataType;
@@ -11,34 +11,34 @@ import com.open.param.ParamBase;
  *
  * @author KEVIN LUAN
  */
-public class ArrayType extends ParamArray {
+public final class ArrayApi extends ParamArray {
 
-  public ArrayType() {
+  public ArrayApi() {
   }
 
-  public static ArrayType create() {
-    ArrayType array = new ArrayType();
+  public static ArrayApi create() {
+    ArrayApi array = new ArrayApi();
     array.dataType = DataType.Array;
     array.name = "";
     return array;
   }
 
-  public ArrayType name(String name) {
+  public ArrayApi name(String name) {
     super.setName(name);
     return this;
   }
 
-  public ArrayType required() {
+  public ArrayApi required() {
     super.required = true;
     return this;
   }
 
-  public ArrayType description(String desc) {
+  public ArrayApi description(String desc) {
     super.description = desc;
     return this;
   }
 
-  public ArrayType children(Param children) {
+  public ArrayApi children(Param children) {
     super.children = new ParamBase[]{(ParamBase) children};
     check(children);
     return this;
