@@ -1,5 +1,7 @@
 package com.open.param.test;
 
+import com.open.param.api.ParamApi;
+import com.open.param.common.GenerateCode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -176,10 +178,66 @@ public class TestResponse {
                   ParamString.of("name", null).setExampleValue("name")
                       .anyMatch(StringValidate.INSTANCE),
                   ParamArray.of("array", null),
-                  ParamNumber.of("num", null).allMatch(TestEnum.values())//
+                  ParamNumber.of("num", null).anyMatch(TestEnum.values())//
               ).anyMatch(ObjectValidate.INSTANCE)));
       JsonNode data = JsonUtils.parser(json.replace("'", "\""));
       JsonValidate.of(paramObject).check(data);
+      System.out.println("提取有效字段:" + JsonUtils.toString(data));
+      ObjectNode objectNode = (ObjectNode) ((ArrayNode) (data.get("items"))).get(0);
+      Assert.assertEquals("张三", objectNode.get("name").asText());
+      Assert.assertTrue(((ArrayNode) objectNode.get("array")).size() > 0);
+      Assert.assertEquals(1, objectNode.get("num").asInt());
+      Assert.assertEquals("成功", objectNode.get("check").asText());
+    }
+  }
+
+  @Test
+  public void testApi() {
+    String json = ("{'items':[{"
+        + "'name':'张三',"
+        + "'array':[1,2,3],"
+        + "'num':'1'"
+        + "}"
+        + "]}").replace("'", "\"");
+    System.out.println(json);
+    {
+      String code = GenerateCode.getJavaCodeV2(json);
+      System.out.println(code);
+      String expected = "ParamApi.object().children(\n"
+          + "ParamApi.array().name(\"items\")\n"
+          + ".children(\n"
+          + "ParamApi.object().children(\n"
+          + "ParamApi.string().name(\"name\")\n"
+          + ".exampleValue(\"张三\")\n"
+          + ",\n"
+          + "ParamApi.array().name(\"array\")\n"
+          + ".children(\n"
+          + "ParamApi.number().exampleValue(1)\n"
+          + ")\n"
+          + ",\n"
+          + "ParamApi.string().name(\"num\")\n"
+          + ".exampleValue(\"1\")\n"
+          + ")\n"
+          + ")\n"
+          + ");";
+      Assert.assertEquals(expected, code);
+    }
+    {
+      Param param = ParamApi.object().children(
+          ParamApi.array().name("items")
+              .children(
+                  ParamApi.object().children(
+                      ParamApi.string().name("name").exampleValue("张三")
+                          .allMatch(StringValidate.INSTANCE),
+                      ParamApi.array().name("array").children(
+                          ParamApi.number().exampleValue(1)
+                      ),
+                      ParamApi.number().name("num").exampleValue("1").anyMatch(TestEnum.values())
+                  ).allMatch(ObjectValidate.INSTANCE))
+      );
+
+      JsonNode data = JsonUtils.parser(json);
+      JsonValidate.of(param).check(data);
       System.out.println("提取有效字段:" + JsonUtils.toString(data));
       ObjectNode objectNode = (ObjectNode) ((ArrayNode) (data.get("items"))).get(0);
       Assert.assertEquals("张三", objectNode.get("name").asText());

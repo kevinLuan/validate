@@ -11,6 +11,9 @@ import com.open.param.common.GenerateCode;
  */
 public class ParamString extends ParamPrimitive {
 
+  protected ParamString() {
+  }
+
   public ParamString(String name, boolean required, String description) {
     super(name, required, DataType.String, description);
   }

@@ -171,11 +171,11 @@ public class ParamBase implements Param {
    * 验证数据
    */
   @SuppressWarnings("unchecked")
-  protected boolean check(JsonNode node) {
+  protected final boolean check(JsonNode node) {
     boolean ok = true;
     Object value = parseAndCheck(node);
     if (allMatchs.length > 0) {
-      ok = Arrays.asList(allMatchs).stream().anyMatch(validate -> validate.test(this, value));
+      ok = Arrays.asList(allMatchs).stream().allMatch(validate -> validate.test(this, value));
     }
     if (ok & anyMatchs.length > 0) {
       ok = Arrays.asList(anyMatchs).stream().anyMatch(validate -> validate.test(this, value));

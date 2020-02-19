@@ -34,24 +34,13 @@ class GenerateCodeV2 {
 
   private String parserArray(ParamArray array) {
     StringBuilder builder = new StringBuilder();
-    String name = array.getName();
-    String description = array.getDescription();
-    ParamBase children = (ParamBase) array.getChildrenAsParam();
     if (array.isRequired()) {
       builder.append("ParamApi.array(true)");
     } else {
       builder.append("ParamApi.array()");
     }
-    builder.append(appendNameAndDesc(name, description));
-    if (children.isObject()) {
-      builder.append(NEW_LINE);
-      builder.append("." + parserObject(children.asObject()));
-    } else if (children.isPrimitive()) {
-      builder.append(NEW_LINE);
-      builder.append("." + parserPrimitive(children.asPrimitive()));
-    } else {
-      throw new IllegalArgumentException("不支持的类型:" + children);
-    }
+    builder.append(appendNameAndDesc(array.getName(), array.getDescription()));
+    builder.append(childrenParam(array, array.getChildren()));
     return builder.toString();
   }
 

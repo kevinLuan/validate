@@ -10,11 +10,12 @@ import com.open.param.ParamNumber;
  */
 public final class NumberApi extends ParamNumber {
 
-  public NumberApi() {}
+  public NumberApi() {
+  }
 
   public static NumberApi create() {
     NumberApi primitive = new NumberApi();
-    primitive.dataType = DataType.String;
+    primitive.dataType = DataType.Number;
     primitive.name = "";
     return primitive;
   }

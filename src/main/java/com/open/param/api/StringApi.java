@@ -2,13 +2,14 @@ package com.open.param.api;
 
 import com.open.param.DataType;
 import com.open.param.ParamNumber;
+import com.open.param.ParamString;
 
 /**
  * 原子参数（参数的最小单位）
  *
  * @author KEVIN LUAN
  */
-public final class StringApi extends ParamNumber {
+public final class StringApi extends ParamString {
 
   public StringApi() {
   }
