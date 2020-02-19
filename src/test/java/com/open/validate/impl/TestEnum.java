@@ -1,7 +1,7 @@
-package com.open.validate.types;
+package com.open.validate.impl;
 
 import com.open.param.ParamNumber;
-import com.open.validate.Validate;
+import com.open.param.validate.Validate;
 
 public enum TestEnum implements Validate<ParamNumber, Number> {
   A(1), B(2), C(3);

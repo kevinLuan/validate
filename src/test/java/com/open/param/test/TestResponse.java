@@ -22,9 +22,9 @@ import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
 import com.open.param.ParamString;
 import com.open.param.validate.JsonValidate;
-import com.open.validate.StringValidate;
-import com.open.validate.types.ObjectValidate;
-import com.open.validate.types.TestEnum;
+import com.open.validate.impl.ObjectValidate;
+import com.open.validate.impl.StringValidate;
+import com.open.validate.impl.TestEnum;
 
 public class TestResponse {
 

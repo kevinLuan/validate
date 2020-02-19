@@ -1,6 +1,7 @@
-package com.open.validate;
+package com.open.validate.impl;
 
 import com.open.param.ParamString;
+import com.open.param.validate.Validate;
 
 public class StringValidate implements Validate<ParamString, String> {
   public static StringValidate INSTANCE = new StringValidate();

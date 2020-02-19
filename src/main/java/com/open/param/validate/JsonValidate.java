@@ -28,11 +28,23 @@ public class JsonValidate {
     return this;
   }
 
+  /**
+   * 根据Param定义对data数据做合法性验证
+   * 
+   * @param jsonNode
+   * @return
+   */
   public JsonValidate check(JsonNode jsonNode) {
     apiCheck.check(jsonNode);
     return this;
   }
 
+  /**
+   * 根据Param定义对data数据做合法性验证
+   * 
+   * @param data
+   * @return
+   */
   public JsonValidate check(Object data) {
     String json = JsonUtils.stringify(data);
     JsonNode jsonNode = JsonUtils.parser(json);
@@ -40,6 +52,12 @@ public class JsonValidate {
     return this;
   }
 
+  /**
+   * 根据Param定义提取合法数据
+   * 
+   * @param jsonNode
+   * @return
+   */
   public Map<String, Object> extract(JsonNode jsonNode) {
     return apiCheck.extract(jsonNode);
   }

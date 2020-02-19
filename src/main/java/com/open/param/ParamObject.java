@@ -1,9 +1,7 @@
 package com.open.param;
 
 /**
- * 对象ObjectNode参数
- *
- * @author KEVIN LUAN
+ * 对象类型参数
  */
 public class ParamObject extends ParamBase {
 

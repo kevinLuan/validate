@@ -6,6 +6,10 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.open.param.common.GenerateCode;
 import com.open.utils.ErrorUtils;
 
+/**
+ * 基本类型参数
+ * 
+ */
 public class ParamPrimitive extends ParamBase {
 
   protected ParamPrimitive() {}

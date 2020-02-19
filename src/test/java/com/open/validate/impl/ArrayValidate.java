@@ -1,8 +1,8 @@
-package com.open.validate.types;
+package com.open.validate.impl;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.open.param.ParamArray;
-import com.open.validate.Validate;
+import com.open.param.validate.Validate;
 
 public class ArrayValidate implements Validate<ParamArray, ArrayNode> {
 

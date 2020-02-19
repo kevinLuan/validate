@@ -3,7 +3,7 @@ package com.open.param;
 import java.lang.reflect.Method;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.open.validate.Validate;
+import com.open.param.validate.Validate;
 
 public enum DataType {
   String, Number, Array, Object;

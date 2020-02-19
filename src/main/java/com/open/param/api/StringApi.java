@@ -1,7 +1,6 @@
 package com.open.param.api;
 
 import com.open.param.DataType;
-import com.open.param.ParamNumber;
 import com.open.param.ParamString;
 
 /**

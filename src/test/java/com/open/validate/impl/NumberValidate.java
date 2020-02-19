@@ -1,6 +1,7 @@
-package com.open.validate;
+package com.open.validate.impl;
 
 import com.open.param.ParamNumber;
+import com.open.param.validate.Validate;
 
 public class NumberValidate implements Validate<ParamNumber, Number> {
   public static NumberValidate INSTANCE = new NumberValidate();

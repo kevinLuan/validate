@@ -5,13 +5,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.open.param.common.GenerateCode;
 
 /**
- * 原子参数（参数的最小单位）
- *
- * @author KEVIN LUAN
+ * Number类型参数
  */
 public class ParamNumber extends ParamPrimitive {
-  protected ParamNumber(){
-  }
+  protected ParamNumber() {}
+
   public ParamNumber(String name, boolean required, String description) {
     super(name, required, DataType.Number, description);
   }
@@ -28,7 +26,9 @@ public class ParamNumber extends ParamPrimitive {
   }
 
   /**
-   * 创建一个必须参数 <p> 当前基本类型只能用在父节点是Array的情况例如：array[0,1,2]
+   * 创建一个必须参数
+   * <p>
+   * 当前基本类型只能用在父节点是Array的情况例如：array[0,1,2]
    */
   public static ParamNumber required(String description) {
     return ParamNumber.make("", true, description);
@@ -42,7 +42,9 @@ public class ParamNumber extends ParamPrimitive {
   }
 
   /**
-   * 创建一个非必须参数 <p> 当前基本类型只能用在父节点是Array的情况例如：array[0,1,2]
+   * 创建一个非必须参数
+   * <p>
+   * 当前基本类型只能用在父节点是Array的情况例如：array[0,1,2]
    */
   public static ParamNumber of(String description) {
     return ParamNumber.make("", false, description);

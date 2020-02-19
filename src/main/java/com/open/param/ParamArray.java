@@ -4,19 +4,16 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * 数组参数类型
- *
- * @author KEVIN LUAN
  */
 public class ParamArray extends ParamBase {
 
-  public ParamArray() {
-  }
+  public ParamArray() {}
 
   public ParamArray(String name, boolean required, String description, Param childrens) {
     super(name, required, DataType.Array, description);
     check(childrens);
     if (childrens != null) {
-      this.children = new ParamBase[]{(ParamBase) childrens};
+      this.children = new ParamBase[] {(ParamBase) childrens};
     }
   }
 

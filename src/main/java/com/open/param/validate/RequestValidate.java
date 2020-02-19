@@ -26,11 +26,23 @@ public class RequestValidate {
     return this;
   }
 
+  /**
+   * 参数合法性验证
+   * 
+   * @param request
+   * @return
+   */
   public RequestValidate check(HttpServletRequest request) {
     apiCheck.check(request);
     return this;
   }
 
+  /**
+   * 根据参数Param定义提取数据
+   * 
+   * @param request
+   * @return
+   */
   public Map<String, Object> extract(HttpServletRequest request) {
     return apiCheck.extract(request);
   }

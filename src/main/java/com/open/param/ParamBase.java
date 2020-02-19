@@ -6,8 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.open.json.api.GsonSerialize;
+import com.open.param.validate.Validate;
 import com.open.utils.ErrorUtils;
-import com.open.validate.Validate;
 
 @SuppressWarnings("rawtypes")
 public class ParamBase implements Param {

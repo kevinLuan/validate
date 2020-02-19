@@ -1,9 +1,8 @@
 package com.open.param;
 
-import com.open.validate.NumberValidate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.open.validate.Validate;
+import com.open.param.validate.Validate;
 
 /**
  * 参数定义
@@ -108,7 +107,10 @@ public interface Param {
   Validate[] getAllMatchRule();
 
   boolean isString();
+
   boolean isNumber();
+
   ParamNumber asNumber();
+
   ParamString asString();
 }

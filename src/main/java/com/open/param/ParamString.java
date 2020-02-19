@@ -5,14 +5,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.open.param.common.GenerateCode;
 
 /**
- * 原子参数（参数的最小单位）
- *
- * @author KEVIN LUAN
+ * String类型参数
  */
 public class ParamString extends ParamPrimitive {
 
-  protected ParamString() {
-  }
+  protected ParamString() {}
 
   public ParamString(String name, boolean required, String description) {
     super(name, required, DataType.String, description);
@@ -30,7 +27,9 @@ public class ParamString extends ParamPrimitive {
   }
 
   /**
-   * 创建一个必须参数 <p> 当前基本类型只能用在父节点是Array的情况例如：array[0,1,2]
+   * 创建一个必须参数
+   * <p>
+   * 当前基本类型只能用在父节点是Array的情况例如：array[0,1,2]
    */
   public static ParamString required(String description) {
     return ParamString.make("", true, description);
