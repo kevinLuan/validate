@@ -10,14 +10,13 @@ import com.open.json.api.JsonUtils;
 import com.open.param.DataType;
 import com.open.param.Param;
 import com.open.param.ParamArray;
-import com.open.param.ParamBase;
 import com.open.param.ParamNumber;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
 import com.open.param.ParamString;
 import com.open.param.parser.GenerateCode;
 import com.open.param.parser.GenerateMockSample;
-import com.open.param.parser.ParamParser;
+import com.open.param.parser.JsonConverter;
 import com.open.param.parser.ParamSerializable;
 import com.open.param.validate.JsonValidate;
 
@@ -28,7 +27,7 @@ public class TestParamUtils {
       throws JsonProcessingException, IOException {
     String json =
         "{\"name\":\"张三丰\",\"ids\":[100],\"items\":[{\"name\":\"手机\",\"id\":2}],\"age\":100.11}";
-    Param param = ParamParser.parse(json);
+    Param param = JsonConverter.INSTANCE.convert(json);
     // 修改参数验证范围
     param.asObject().getChildren()[0].asPrimitive().between(10, 20);
     try {
@@ -55,7 +54,7 @@ public class TestParamUtils {
   public void test_jsonToParam() {
     String json =
         "{\"name\":\"张三丰\",\"ids\":[100],\"items\":[{\"name\":\"手机\",\"id\":2}],\"age\":100.11}";
-    Param actual = ParamParser.parse(json);
+    Param actual = JsonConverter.INSTANCE.convert(json);
     Param expected = ParamObject.of(//
         ParamPrimitive.of("name", DataType.String, null).setExampleValue("张三丰"), //
         ParamArray.of("ids", null, //
@@ -157,7 +156,7 @@ public class TestParamUtils {
         "{\"name\":\"张三丰\",\"ids\":[100],\"items\":[{\"name\":\"手机\",\"id\":2}],\"age\":100.11}";
     System.out.println("原始数据JSON:");
     System.out.println(json);
-    Param param = ParamParser.parse(json);
+    Param param = JsonConverter.INSTANCE.convert(json);
     String actual = GenerateMockSample.getMockData(param);
     System.out.println("反向解析到JSON:");
     System.out.println(actual);

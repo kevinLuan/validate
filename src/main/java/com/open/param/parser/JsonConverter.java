@@ -17,13 +17,15 @@ import com.open.param.ParamPrimitive;
 import com.open.param.ParamString;
 
 /**
- * JSON解析器
+ * JSON转换器
  */
-public class ParamParser {
+public class JsonConverter {
+  public static JsonConverter INSTANCE = new JsonConverter();
+
   /**
    * 从JSON协议解析出参数定义对象
    */
-  public static Param parse(String jsonData) {
+  public Param convert(String jsonData) {
     JsonElement element = new JsonParser().parse(jsonData);
     Param param = null;
     if (element.isJsonArray()) {
@@ -35,11 +37,10 @@ public class ParamParser {
     } else {
       System.out.println("不支持的类型->" + element);
     }
-    return param;
+    return ParamSerializable.INSTANCE.adjust(param);
   }
 
-  private static ParamBase parserObject(String name, JsonObject jsonObject) {
-
+  private ParamBase parserObject(String name, JsonObject jsonObject) {
     Param values[] = new Param[jsonObject.size()];
     Iterator<Map.Entry<String, JsonElement>> iterator = jsonObject.entrySet().iterator();
     int index = 0;
@@ -65,7 +66,7 @@ public class ParamParser {
     }
   }
 
-  private static ParamArray parserArray(String name, JsonArray array) {
+  private ParamArray parserArray(String name, JsonArray array) {
     if (array.size() > 0) {
       JsonElement element = array.get(0);
       if (element.isJsonObject()) {
@@ -79,7 +80,7 @@ public class ParamParser {
     return ParamArray.of(name, null);
   }
 
-  private static ParamPrimitive parserPrimitive(String name, JsonPrimitive element) {
+  private ParamPrimitive parserPrimitive(String name, JsonPrimitive element) {
     if (element.isNumber()) {
       return ParamNumber.of(name, null).setExampleValue(element.getAsNumber());
     } else {

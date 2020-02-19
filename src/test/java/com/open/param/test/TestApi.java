@@ -8,7 +8,7 @@ import com.open.param.ParamBase;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
 import com.open.param.parser.GenerateMockSample;
-import com.open.param.parser.ParamParser;
+import com.open.param.parser.JsonConverter;
 
 public class TestApi {
 
@@ -37,7 +37,7 @@ public class TestApi {
     System.out.println(GenerateMockSample.getMockData(product));
     String json =
         "{\"name\":\"IPhone\",\"price\":5800.00,\"skus\":[{\"id\":123,\"name\":\"移动版\",\"code\":[{\"title\":\"土黄金\",\"id\":1000},{\"title\":\"黑色\",\"id\":1001}]}]}";
-    Param param = ParamParser.parse(json);
+    Param param = JsonConverter.INSTANCE.convert(json);
     System.out.println(GenerateMockSample.getMockData(param));
   }
 }

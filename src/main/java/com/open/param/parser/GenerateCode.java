@@ -12,7 +12,7 @@ public class GenerateCode {
   private final static String NEW_LINE = "\n";
 
   public static String getJavaCode(String jsonData) {
-    Param param = ParamParser.parse(jsonData);
+    Param param = JsonConverter.INSTANCE.convert(jsonData);
     return getJavaCode(param);
   }
 

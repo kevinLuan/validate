@@ -21,6 +21,13 @@ public class ParamSerializable {
 
   public Param decode(String json) {
     Param param = GsonSerialize.INSTANCE.decode(json, ParamBase.class);
+    return adjust(param);
+  }
+
+  /**
+   * 调整对象类型
+   */
+  public Param adjust(Param param) {
     if (param.isNumber()) {
       param = param.asNumber();
     } else if (param.isString()) {
@@ -32,7 +39,6 @@ public class ParamSerializable {
       param = param.asObject();
       obj(param.asObject());
     }
-
     return param;
   }
 
