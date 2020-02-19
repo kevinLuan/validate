@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.open.datatype.Numberx;
 import com.open.param.DataType;
 import com.open.param.Param;
 import com.open.param.ParamArray;
@@ -77,8 +76,8 @@ public class GenerateMockSample {
   private static JsonElement primitive(ParamPrimitive primitive) {
     if (primitive.getDataType() == DataType.Number) {
       if (primitive.getExampleValue() != null) {
-        Numberx numberx = Numberx.parser(primitive.getExampleValue(), false);
-        return new JsonPrimitive(numberx.value);
+        Number number = (Number) primitive.asNumber().parseRawValue(primitive.getExampleValue());
+        return new JsonPrimitive(number);
       }
       return JsonNull.INSTANCE;
     } else {

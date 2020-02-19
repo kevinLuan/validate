@@ -3,7 +3,6 @@ package com.open.param.common;
 import org.apache.commons.lang3.StringUtils;
 import com.open.param.Param;
 import com.open.param.ParamArray;
-import com.open.param.ParamBase;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
 
