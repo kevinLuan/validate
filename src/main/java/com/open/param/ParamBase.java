@@ -1,5 +1,6 @@
 package com.open.param;
 
+import com.open.param.parser.ParamParser;
 import java.util.Arrays;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
@@ -7,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.open.json.api.GsonSerialize;
 import com.open.utils.ErrorUtils;
+import com.open.utils.ParamExec;
+import com.open.utils.ParamHelper;
 import com.open.validate.Validate;
 
 @SuppressWarnings("rawtypes")
@@ -21,7 +24,7 @@ public class ParamBase implements Param {
   protected transient ParamBase parentNode;
 
   // 子节点(ParamArray,ParamObject)
-  ParamBase[] children = new ParamBase[0];
+  protected ParamBase[] children = new ParamBase[0];
   // 限制最小输入值(ParamPrimitive)
   Number min;
   // 限制最大输入值(ParamPrimitive)
@@ -61,7 +64,8 @@ public class ParamBase implements Param {
     return allMatchs;
   }
 
-  public ParamBase() {}
+  public ParamBase() {
+  }
 
   public ParamBase(String name, boolean required, DataType dataType, String description) {
     this.name = name;
@@ -226,4 +230,40 @@ public class ParamBase implements Param {
   public void setName(String name) {
     this.name = name;
   }
+
+  @Override
+  public boolean isNumber() {
+    return dataType.isNumber();
+  }
+
+  @Override
+  public boolean isString() {
+    return dataType.isString();
+  }
+
+  @Override
+  public ParamNumber asNumber() {
+    if (isNumber()) {
+      return ParamNumber.make(name, required, description)
+          .between(min, max).setExampleValue(exampleValue)
+          .setParentNode(this.parentNode)
+          .anyMatch(this.getAnyMatchRules())
+          .allMatch(this.getAllMatchRule()).asNumber();
+    }
+    throw ErrorUtils.newClassCastException(this.getClass(), ParamNumber.class);
+  }
+
+  @Override
+  public ParamString asString() {
+    if (isString()) {
+      return ParamString.make(name, required, description)
+          .between(min, max).setExampleValue(exampleValue)
+          .setParentNode(this.parentNode)
+          .anyMatch(this.getAnyMatchRules())
+          .allMatch(this.getAllMatchRule()).asString();
+    }
+    throw ErrorUtils.newClassCastException(this.getClass(), ParamString.class);
+  }
+
+
 }

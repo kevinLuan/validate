@@ -18,6 +18,7 @@ import com.open.param.ParamString;
 import com.open.param.parser.GenerateCode;
 import com.open.param.parser.GenerateMockSample;
 import com.open.param.parser.ParamParser;
+import com.open.param.parser.ParamSerializable;
 import com.open.param.validate.JsonValidate;
 
 public class TestParamUtils {
@@ -167,7 +168,7 @@ public class TestParamUtils {
   public void test_fromParamAsJsonData1() {
     String json =
         "{\"dataType\":\"Object\",\"children\":[{\"name\":\"status\",\"description\":\"状态\",\"dataType\":\"Object\",\"children\":[{\"name\":\"statusCode\",\"description\":\"状态码\",\"exampleValue\":\"1500\",\"dataType\":\"Number\"},{\"name\":\"statusReason\",\"description\":\"状态描述\",\"exampleValue\":\"参数错误\",\"dataType\":\"String\"}]},{\"name\":\"result\",\"description\":\"结果\",\"dataType\":\"Object\",\"children\":[{\"name\":\"id\",\"description\":\"ID\",\"exampleValue\":\"1234\",\"dataType\":\"String\"},{\"name\":\"name\",\"description\":\"名称\",\"exampleValue\":\"xxx\",\"dataType\":\"String\"}]}]}";
-    Param param = GsonSerialize.INSTANCE.decode(json, ParamBase.class);
+    Param param = ParamSerializable.INSTANCE.decode(json);
     String expected =
         "{\"status\":{\"statusCode\":1500,\"statusReason\":\"参数错误\"},\"result\":{\"id\":\"1234\",\"name\":\"xxx\"}}";
     String actual = GenerateMockSample.getMockData(param);
@@ -179,15 +180,16 @@ public class TestParamUtils {
   public void test_fromParamAsJavaCode() {
     String json =
         "{\"dataType\":\"Object\",\"children\":[{\"name\":\"status\",\"description\":\"状态\",\"dataType\":\"Object\",\"children\":[{\"name\":\"statusCode\",\"description\":\"状态码\",\"exampleValue\":\"1500\",\"dataType\":\"Number\"},{\"name\":\"statusReason\",\"description\":\"状态描述\",\"exampleValue\":\"参数错误\",\"dataType\":\"String\"}]},{\"name\":\"result\",\"description\":\"结果\",\"dataType\":\"Object\",\"children\":[{\"name\":\"id\",\"description\":\"ID\",\"exampleValue\":\"1234\",\"dataType\":\"String\"},{\"name\":\"name\",\"description\":\"名称\",\"exampleValue\":\"xxx\",\"dataType\":\"String\"}]}]}";
-    Param param = GsonSerialize.INSTANCE.decode(json, ParamBase.class);
+    Param param = ParamSerializable.INSTANCE.decode(json);
     String expected =
-        "ParamObject.of(ParamObject.of('status','状态',\n"
-            + "ParamPrimitive.of('statusCode',DataType.Number, '状态码').setExampleValue(1500),\n"
-            + "ParamPrimitive.of('statusReason',DataType.String, '状态描述').setExampleValue('参数错误')\n"
-            + ")\n,\n"
-            + "ParamObject.of('result','结果',\n"
-            + "ParamPrimitive.of('id',DataType.String, 'ID').setExampleValue('1234'),"
-            + "\nParamPrimitive.of('name',DataType.String, '名称').setExampleValue('xxx')\n"
+        "ParamObject.of(ParamObject.of(\"status\",\"状态\",\n"
+            + "ParamNumber.of(\"statusCode\",\"状态码\").setExampleValue(1500),\n"
+            + "ParamString.of(\"statusReason\",\"状态描述\").setExampleValue(\"参数错误\")\n"
+            + ")\n"
+            + ",\n"
+            + "ParamObject.of(\"result\",\"结果\",\n"
+            + "ParamString.of(\"id\",\"ID\").setExampleValue(\"1234\"),\n"
+            + "ParamString.of(\"name\",\"名称\").setExampleValue(\"xxx\")\n"
             + ")\n"
             + ");";
     expected = expected.replace("'", "\"");

@@ -1,5 +1,6 @@
 package com.open.param;
 
+import com.open.validate.NumberValidate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.open.validate.Validate;
@@ -105,4 +106,9 @@ public interface Param {
    * 获取所有匹配规则
    */
   Validate[] getAllMatchRule();
+
+  boolean isString();
+  boolean isNumber();
+  ParamNumber asNumber();
+  ParamString asString();
 }

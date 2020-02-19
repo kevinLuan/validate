@@ -4,18 +4,19 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * 数组参数类型
- * 
+ *
  * @author KEVIN LUAN
  */
 public class ParamArray extends ParamBase {
 
-  public ParamArray() {}
+  public ParamArray() {
+  }
 
   public ParamArray(String name, boolean required, String description, Param childrens) {
     super(name, required, DataType.Array, description);
     check(childrens);
     if (childrens != null) {
-      this.children = new ParamBase[] {(ParamBase) childrens};
+      this.children = new ParamBase[]{(ParamBase) childrens};
     }
   }
 
@@ -33,9 +34,6 @@ public class ParamArray extends ParamBase {
 
   /**
    * 创建一个必须参数
-   * 
-   * @param name
-   * @return
    */
   public static ParamArray required(String name, String description, ParamBase childrens) {
     return new ParamArray(name, true, description, childrens);
@@ -47,10 +45,6 @@ public class ParamArray extends ParamBase {
 
   /**
    * 创建一个必须的Array节点，任意类型的子节点
-   * 
-   * @param name
-   * @param description
-   * @return
    */
   public static ParamArray required(String name, String description) {
     return new ParamArray(name, true, description, null);
@@ -62,17 +56,18 @@ public class ParamArray extends ParamBase {
 
   /**
    * 创建一个非必须的Array节点，任意类型的子节点
-   * 
-   * @param name
-   * @param description
-   * @return
    */
   public static ParamArray of(String name, String description) {
     return new ParamArray(name, false, description, null);
   }
 
   @Override
-  public ParamArray asArray() {
+  public final boolean isArray() {
+    return true;
+  }
+
+  @Override
+  public final ParamArray asArray() {
     return this;
   }
 

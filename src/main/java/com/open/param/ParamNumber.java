@@ -10,7 +10,8 @@ import com.open.param.parser.GenerateCode;
  * @author KEVIN LUAN
  */
 public class ParamNumber extends ParamPrimitive {
-
+  protected ParamNumber(){
+  }
   public ParamNumber(String name, boolean required, String description) {
     super(name, required, DataType.Number, description);
   }

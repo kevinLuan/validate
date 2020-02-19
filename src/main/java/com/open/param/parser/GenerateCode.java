@@ -34,7 +34,7 @@ public class GenerateCode {
     if (result.endsWith(NEW_LINE)) {
       result = result.substring(0, result.length() - NEW_LINE.length());
     }
-    return result.replace("\n\n","\n") + ";";
+    return result.replace("\n\n", "\n") + ";";
   }
 
   private static void parserArray(ParamArray array, StringBuilder builder) {
@@ -42,9 +42,6 @@ public class GenerateCode {
     String description = array.getDescription();
     ParamBase children = (ParamBase) array.getChildrenAsParam();
     String showName = formatParam(name), showDesc = formatParam(description);
-    if (name.equals("items")) {
-      System.out.println("debug");
-    }
     if (children == null) {
       if (array.isRequired()) {
         builder.append(

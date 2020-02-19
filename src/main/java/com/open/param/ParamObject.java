@@ -7,7 +7,7 @@ package com.open.param;
  */
 public class ParamObject extends ParamBase {
 
-  ParamObject() {
+  protected ParamObject() {
     super();
   }
 
@@ -59,4 +59,4 @@ public class ParamObject extends ParamBase {
     return children;
   }
 
-  }
+}

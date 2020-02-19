@@ -1,6 +1,5 @@
 package com.open.param;
 
-import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -8,6 +7,8 @@ import com.open.param.parser.GenerateCode;
 import com.open.utils.ErrorUtils;
 
 public class ParamPrimitive extends ParamBase {
+
+  protected ParamPrimitive() {}
 
   public ParamPrimitive(String name, boolean required, DataType dataType, String description) {
     super(name, required, dataType, description);
