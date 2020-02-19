@@ -1,6 +1,5 @@
 package com.open.param.test;
 
-import com.open.param.parser.GenerateCodeV2;
 import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,11 +14,10 @@ import com.open.param.ParamNumber;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
 import com.open.param.ParamString;
-import com.open.param.api.ParamApi;
-import com.open.param.parser.GenerateCode;
-import com.open.param.parser.GenerateMockSample;
-import com.open.param.parser.JsonConverter;
-import com.open.param.parser.ParamSerializable;
+import com.open.param.common.GenerateCode;
+import com.open.param.common.GenerateMockSample;
+import com.open.param.common.JsonConverter;
+import com.open.param.common.ParamSerializable;
 import com.open.param.validate.JsonValidate;
 
 public class TestParamUtils {
@@ -79,7 +77,7 @@ public class TestParamUtils {
   public void testGeneratedJavaCode() {
     String json =
         "{\"name\":\"BeJson\",\"url\":\"http://www.bejson.com\",\"page\":88,\"isNonProfit\":true,\"address\":{\"street\":\"科技园路.\",\"city\":\"江苏苏州\",\"country\":\"中国\",\"arrayBoolean\":[true,false,true,false],\"arrayFloat\":[1.234,2.345],\"arrayString\":[\"篮球\",\"足球\"],\"arrayLong\":[1234234,234234],\"arrayObj\":[{\"name\":\"Google\",\"url\":\"http://www.google.com\"},{\"name\":\"Baidu\",\"url\":\"http://www.baidu.com\"},{\"name\":\"SoSo\",\"url\":\"http://www.SoSo.com\"}]},\"links\":[{\"name\":\"Google\",\"url\":\"http://www.google.com\"},{\"name\":\"Baidu\",\"url\":\"http://www.baidu.com\"},{\"name\":\"SoSo\",\"url\":\"http://www.SoSo.com\"}]}";
-    String javaCode = GenerateCode.getJavaCode(json);
+    String javaCode = GenerateCode.getJavaCodeV1(json);
     System.out.println("JSON原始数据:" + json);
     System.out.println("生成java代码:" + javaCode);
     Param objParam = ParamObject.of(
@@ -132,7 +130,7 @@ public class TestParamUtils {
         ParamPrimitive.of("age", DataType.Number, "100.11")//
     );
 
-    String code = GenerateCode.getJavaCode(param);
+    String code = GenerateCode.getJavaCodeV1(param);
     System.out.println("生成Code:");
     System.out.println(code);
     String expected = "ParamObject.required(\n" + //
@@ -194,7 +192,7 @@ public class TestParamUtils {
             + ")\n"
             + ");";
     expected = expected.replace("'", "\"");
-    String actual = GenerateCode.getJavaCode(param);
+    String actual = GenerateCode.getJavaCodeV1(param);
     System.out.println(actual);
     Assert.assertEquals(expected, actual);
     {// 生成代码示例
@@ -229,7 +227,7 @@ public class TestParamUtils {
               + ")\n"
               + ");";
       expected = expected.replace("'", "\"");
-      String actual = GenerateCode.getJavaCode(param);
+      String actual = GenerateCode.getJavaCodeV1(param);
       System.out.println(actual);
       Assert.assertEquals(expected, actual);
     }
@@ -253,7 +251,7 @@ public class TestParamUtils {
           + ".exampleValue(\"xxx\")\n"
           + ")\n"
           + ");";
-      String actual = GenerateCodeV2.INSTANCE.getJavaCode(param);
+      String actual = GenerateCode.getJavaCodeV2(param);
       System.out.println(actual);
       Assert.assertEquals(expected, actual);
     }

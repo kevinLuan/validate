@@ -1,4 +1,4 @@
-package com.open.param.parser;
+package com.open.param.common;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

@@ -7,8 +7,8 @@ import com.open.param.ParamArray;
 import com.open.param.ParamBase;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
-import com.open.param.parser.GenerateMockSample;
-import com.open.param.parser.JsonConverter;
+import com.open.param.common.GenerateMockSample;
+import com.open.param.common.JsonConverter;
 
 public class TestApi {
 

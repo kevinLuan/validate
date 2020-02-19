@@ -3,7 +3,7 @@ package com.open.param;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.open.param.parser.GenerateCode;
+import com.open.param.common.GenerateCode;
 import com.open.utils.ErrorUtils;
 
 public class ParamPrimitive extends ParamBase {

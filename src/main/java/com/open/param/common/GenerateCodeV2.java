@@ -1,4 +1,4 @@
-package com.open.param.parser;
+package com.open.param.common;
 
 import org.apache.commons.lang3.StringUtils;
 import com.open.param.Param;
@@ -7,15 +7,10 @@ import com.open.param.ParamBase;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
 
-public class GenerateCodeV2 {
+class GenerateCodeV2 {
 
   private final static String NEW_LINE = "\n";
   public static GenerateCodeV2 INSTANCE = new GenerateCodeV2();
-
-  public String getJavaCode(String jsonData) {
-    Param param = JsonConverter.INSTANCE.convert(jsonData);
-    return getJavaCode(param);
-  }
 
   /**
    * 生成Java code

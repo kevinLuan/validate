@@ -1,4 +1,4 @@
-package com.open.param.parser;
+package com.open.param.common;
 
 import com.open.json.api.GsonSerialize;
 import com.open.param.Param;

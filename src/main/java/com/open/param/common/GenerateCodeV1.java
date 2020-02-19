@@ -1,4 +1,4 @@
-package com.open.param.parser;
+package com.open.param.common;
 
 import com.open.param.DataType;
 import com.open.param.Param;
@@ -7,19 +7,15 @@ import com.open.param.ParamBase;
 import com.open.param.ParamObject;
 import com.open.param.ParamPrimitive;
 
-public class GenerateCode {
+class GenerateCodeV1 {
 
   private final static String NEW_LINE = "\n";
-
-  public static String getJavaCode(String jsonData) {
-    Param param = JsonConverter.INSTANCE.convert(jsonData);
-    return getJavaCode(param);
-  }
+  public static GenerateCodeV1 INSTANCE = new GenerateCodeV1();
 
   /**
    * 生成Java code
    */
-  public static String getJavaCode(Param param) {
+  public String getJavaCode(Param param) {
     StringBuilder builder = new StringBuilder();
     if (param.isArray()) {
       parserArray(param.asArray(), builder);
@@ -37,7 +33,7 @@ public class GenerateCode {
     return result.replace("\n\n", "\n") + ";";
   }
 
-  private static void parserArray(ParamArray array, StringBuilder builder) {
+  private void parserArray(ParamArray array, StringBuilder builder) {
     String name = array.getName();
     String description = array.getDescription();
     ParamBase children = (ParamBase) array.getChildrenAsParam();
@@ -80,7 +76,7 @@ public class GenerateCode {
     }
   }
 
-  private static void parserObject(ParamObject object, StringBuilder builder) {
+  private void parserObject(ParamObject object, StringBuilder builder) {
     String name = object.getName();
     String description = object.getDescription();
     Param[] childrens = object.getChildren();
@@ -132,7 +128,7 @@ public class GenerateCode {
     newLine(builder);
   }
 
-  private static String remoteLastComma(String str) {
+  private String remoteLastComma(String str) {
     int lastCommaIndex = str.lastIndexOf(",");
     String endWith = str.substring(lastCommaIndex);
     if (endWith.equals(",") || endWith.equals("," + NEW_LINE)) {
@@ -141,18 +137,18 @@ public class GenerateCode {
     return str;
   }
 
-  private static String newLine(StringBuilder builder) {
+  private String newLine(StringBuilder builder) {
     if (!builder.toString().endsWith(NEW_LINE)) {
       builder.append(NEW_LINE);
     }
     return builder.toString();
   }
 
-  private static void parserPrimitive(ParamPrimitive primitive, StringBuilder builder) {
+  private void parserPrimitive(ParamPrimitive primitive, StringBuilder builder) {
     builder.append(primitive.toJavaCode());
   }
 
-  public static String buildExampleValue(ParamPrimitive primitive) {
+  public String buildExampleValue(ParamPrimitive primitive) {
     if (primitive.getExampleValue() != null) {
       if (primitive.getDataType().isNumber()) {
         return ".setExampleValue(" + primitive.getExampleValue() + ")";
@@ -164,14 +160,14 @@ public class GenerateCode {
     }
   }
 
-  public static String formatParam(String description) {
+  public String formatParam(String description) {
     if (description != null) {
       return "\"" + description + "\"";
     }
     return description;
   }
 
-  public static String getType(DataType type) {
+  public String getType(DataType type) {
     return "DataType." + type;
   }
 }

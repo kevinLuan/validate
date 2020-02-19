@@ -1,4 +1,4 @@
-package com.open.param.parser;
+package com.open.param.common;
 
 import java.util.Iterator;
 import java.util.Map;

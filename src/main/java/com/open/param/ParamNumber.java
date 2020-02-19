@@ -2,7 +2,7 @@ package com.open.param;
 
 import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.open.param.parser.GenerateCode;
+import com.open.param.common.GenerateCode;
 
 /**
  * 原子参数（参数的最小单位）

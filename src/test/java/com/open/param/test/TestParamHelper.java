@@ -1,20 +1,14 @@
 package com.open.param.test;
 
-import com.open.param.DataType;
 import com.open.param.Param;
 import com.open.param.ParamArray;
-import com.open.param.ParamBase;
 import com.open.param.ParamNumber;
 import com.open.param.ParamObject;
-import com.open.param.ParamPrimitive;
 import com.open.param.ParamString;
-import com.open.param.api.ArrayApi;
 import com.open.param.api.NumberApi;
-import com.open.param.api.ObjectApi;
 import com.open.param.api.ParamApi;
-import com.open.param.api.StringApi;
-import com.open.param.parser.GenerateCode;
-import com.open.param.parser.ParamSerializable;
+import com.open.param.common.GenerateCode;
+import com.open.param.common.ParamSerializable;
 import com.open.utils.ParamExec;
 import com.open.utils.ParamHelper;
 import org.junit.Assert;
@@ -89,6 +83,6 @@ public class TestParamHelper {
         "{\"dataType\":\"Object\",\"children\":[{\"name\":\"status\",\"description\":\"状态\",\"dataType\":\"Object\",\"children\":[{\"name\":\"statusCode\",\"description\":\"状态码\",\"exampleValue\":\"1500\",\"dataType\":\"Number\"},{\"name\":\"statusReason\",\"description\":\"状态描述\",\"exampleValue\":\"参数错误\",\"dataType\":\"String\"}]},{\"name\":\"result\",\"description\":\"结果\",\"dataType\":\"Object\",\"children\":[{\"name\":\"id\",\"description\":\"ID\",\"exampleValue\":\"1234\",\"dataType\":\"String\"},{\"name\":\"name\",\"description\":\"名称\",\"exampleValue\":\"xxx\",\"dataType\":\"String\"}]}]}";
     Param param = ParamSerializable.INSTANCE.decode(json);
     System.out.println(param);
-    System.out.println(GenerateCode.getJavaCode(param));
+    System.out.println(GenerateCode.getJavaCodeV1(param));
   }
 }
