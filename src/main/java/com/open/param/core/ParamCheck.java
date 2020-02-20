@@ -11,18 +11,18 @@ import com.open.param.Param;
  *
  * @author KEVIN LUAN
  */
-public class ApiResponse extends ApiBase<JsonNode> {
+public class ParamCheck extends ApiBase<JsonNode> {
 
-  public Param responseParam;
+  public Param param;
   private CheckParam checkParam = CheckParam.getInstance(this);
 
-  private ApiResponse(Param responseParam) {
-    this.responseParam = responseParam;
+  private ParamCheck(Param param) {
+    this.param = param;
   }
 
   @Override
-  public ApiResponse setReference() {
-    responseParam = responseParam.optimize();
+  public ParamCheck setReference() {
+    param = param.optimize();
     return this;
   }
 
@@ -30,8 +30,8 @@ public class ApiResponse extends ApiBase<JsonNode> {
    * 根据API返回协议格式定义进行合法性验证
    */
   @Override
-  public ApiResponse check(JsonNode jsonNode) {
-    checkParam.checkResponse(responseParam, jsonNode);
+  public ParamCheck check(JsonNode jsonNode) {
+    checkParam.checkResponse(param, jsonNode);
     return this;
   }
 
@@ -40,12 +40,12 @@ public class ApiResponse extends ApiBase<JsonNode> {
    */
   @Override
   public Map<String, Object> extract(JsonNode jsonNode) {
-    if (responseParam == null) {
-      throw new IllegalArgumentException("responseParam must be not null");
+    if (param == null) {
+      throw new IllegalArgumentException("param must be not null");
     }
-    object(jsonNode, responseParam);
+    object(jsonNode, param);
     Iterator<String> iterator = jsonNode.fieldNames();
-    Map<String, Object> data = new HashMap<>(responseParam.asObject().getChildren().length);
+    Map<String, Object> data = new HashMap<>(param.asObject().getChildren().length);
     while (iterator.hasNext()) {
       String key = iterator.next();
       data.put(key, jsonNode.get(key));
@@ -54,7 +54,7 @@ public class ApiResponse extends ApiBase<JsonNode> {
   }
 
   public static ApiCheck<JsonNode> make(Param param) {
-    return new ApiResponse(param).setReference();
+    return new ParamCheck(param).setReference();
   }
 
   @Override

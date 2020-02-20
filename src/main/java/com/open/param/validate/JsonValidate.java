@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.open.json.api.JsonUtils;
 import com.open.param.Param;
 import com.open.param.core.ApiCheck;
-import com.open.param.core.ApiResponse;
+import com.open.param.core.ParamCheck;
 import com.open.param.core.UnknownNodeFilter;
 
 public class JsonValidate {
@@ -13,7 +13,7 @@ public class JsonValidate {
   private ApiCheck<JsonNode> apiCheck;
 
   public JsonValidate(Param param) {
-    this.apiCheck = ApiResponse.make(param);
+    this.apiCheck = ParamCheck.make(param);
   }
 
   public static JsonValidate of(Param param) {
