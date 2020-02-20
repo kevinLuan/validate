@@ -1,5 +1,7 @@
 package com.open.param.api;
 
+import com.open.param.ParamAny;
+
 public class ParamApi {
   public static ObjectApi object(boolean require) {
     if (require) {
@@ -49,5 +51,19 @@ public class ParamApi {
     }
   }
 
+  public static BooleanApi bool() {
+    return BooleanApi.create();
+  }
 
+  public static BooleanApi bool(boolean require) {
+    return BooleanApi.create(require);
+  }
+
+  public static ParamAny any() {
+    return ParamAny.create();
+  }
+
+  public static ParamAny any(boolean require) {
+    return ParamAny.create(require);
+  }
 }

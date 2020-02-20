@@ -2,6 +2,7 @@ package com.open.param.common;
 
 import com.open.json.api.GsonSerialize;
 import com.open.param.Param;
+import com.open.param.ParamAny;
 import com.open.param.ParamArray;
 import com.open.param.ParamBase;
 import com.open.param.ParamObject;
@@ -60,8 +61,13 @@ public class ParamSerializable {
         childrens[i] = children.asString();
       } else if (children.isNumber()) {
         childrens[i] = children.asNumber();
+      } else if (children.isBoolean()) {
+        childrens[i] = children.asBoolean();
+      } else if (children.isAny()) {
+        childrens[i] = children.asAny();
       } else {
-        throw new IllegalArgumentException("不支持的类型:`" + param.getDataType() + "`");
+        throw NotSupportException
+            .of("不支持的类型:`" + children.getDataType() + "`，path:`" + children.getPath() + "`");
       }
     }
   }

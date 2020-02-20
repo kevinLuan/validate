@@ -146,7 +146,7 @@ public class ParamNumber extends ParamPrimitive {
   }
 
   @Override
-  public Object parseAndCheck(JsonNode node) {
+  public Number parseAndCheck(JsonNode node) {
     Number number = asNumber().parseNumber(node);
     if (number == null) {
       if (this.required) {

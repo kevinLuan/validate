@@ -3,6 +3,7 @@ package com.open.param;
 import java.util.Arrays;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
+import org.omg.CORBA.Any;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.open.json.api.GsonSerialize;
@@ -88,6 +89,7 @@ public class ParamBase implements Param {
     return this;
   }
 
+  @Override
   public final String getPath() {
     return NodeHelper.parser(this).getPath();
   }
@@ -109,7 +111,7 @@ public class ParamBase implements Param {
 
   @Override
   public boolean isObject() {
-    return dataType == DataType.Object;
+    return dataType.isObject();
   }
 
   @Override
@@ -190,7 +192,7 @@ public class ParamBase implements Param {
   }
 
   /**
-   * 解析并转化到目标类型，并完基础验证逻辑(this.min,this.max)
+   * 解析并转化到目标类型，并完基础验证逻辑(this.min,this.max),验证是否必传
    */
   protected Object parseAndCheck(JsonNode value) {
     return value;
@@ -260,6 +262,44 @@ public class ParamBase implements Param {
           .allMatch(this.getAllMatchRule()).asString();
     }
     throw ErrorUtils.newClassCastException(this.getClass(), ParamString.class);
+  }
+
+  @Override
+  public boolean isAny() {
+    return this.dataType.isAny();
+  }
+
+  @Override
+  public ParamAny asAny() {
+    if (isAny()) {
+      return ParamAny.create(required)
+          .name(name)
+          .description(description)
+          .setParentNode(parentNode)
+          .anyMatch(getAnyMatchRules())
+          .allMatch(getAllMatchRule())
+          .asAny();
+    }
+    throw ErrorUtils.newClassCastException(this.getClass(), Any.class);
+  }
+
+  @Override
+  public boolean isBoolean() {
+    return dataType.isBoolean();
+  }
+
+  @Override
+  public ParamBoolean asBoolean() {
+    if (isBoolean()) {
+      return ParamBoolean.make(name, required, description)
+          .between(min, max)
+          .setExampleValue(exampleValue)
+          .setParentNode(this.parentNode)
+          .anyMatch(this.getAnyMatchRules())
+          .allMatch(this.getAllMatchRule())
+          .asBoolean();
+    }
+    throw ErrorUtils.newClassCastException(this.getClass(), ParamBoolean.class);
   }
 
 

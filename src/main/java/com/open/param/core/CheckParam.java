@@ -1,5 +1,6 @@
 package com.open.param.core;
 
+import com.open.param.common.NotSupportException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -50,8 +51,10 @@ class CheckParam {
       check_array(param, jsonNode);
     } else if (param.isObject()) {
       check_object(param, jsonNode);
+    } else if (param.isAny()) {
+      param.asAny().asserValue(jsonNode);
     } else {
-      throw new IllegalArgumentException("不支持的类型:" + param);
+      throw NotSupportException.of("不支持的类型:" + param);
     }
   }
 
@@ -89,8 +92,10 @@ class CheckParam {
           check_array(param, jsonNode);
         } else if (param.isObject()) {
           check_object(param, jsonNode);
+        }else if(param.isAny()){
+          param.asAny().asserValue(jsonNode);
         } else {
-          throw new IllegalArgumentException("不支持的类型:" + param);
+          throw NotSupportException.of("不支持的类型:" + param);
         }
       }
     }
@@ -112,8 +117,10 @@ class CheckParam {
             check_object(children, (ObjectNode) node);
           } else if (children.isPrimitive()) {
             children.asPrimitive().asserValue(node);
+          } else if (children.isAny()) {
+            children.asAny().asserValue(node);
           } else {
-            throw new IllegalArgumentException("不支持的类型" + children);
+            throw NotSupportException.of("不支持的类型" + children);
           }
         }
       }
@@ -147,8 +154,10 @@ class CheckParam {
         check_array(p, value);
       } else if (p.isPrimitive()) {
         p.asPrimitive().asserValue(value);
+      } else if (p.isAny()) {
+        p.asAny().asserValue(jsonNode);
       } else {
-        throw new IllegalArgumentException("不支持的类型:" + p);
+        throw NotSupportException.of("不支持的类型" + p);
       }
     }
     // 用户自定义的验证

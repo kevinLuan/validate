@@ -1,14 +1,16 @@
 package com.open.param;
 
+import com.open.param.common.NotSupportException;
 import java.lang.reflect.Method;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.open.param.validate.Validate;
 
 public enum DataType {
-  String, Number, Array, Object;
+  String, Number, Array, Object, Any, Boolean;
+
   public boolean isPrimitive() {
-    return this.isNumber() || this.isString();
+    return this.isNumber() || this.isString() || isBoolean();
   }
 
   public boolean isNumber() {
@@ -27,19 +29,25 @@ public enum DataType {
     return this == DataType.Array;
   }
 
+  public boolean isAny() {
+    return this == DataType.Any;
+  }
+
+  public boolean isBoolean() {
+    return this == DataType.Boolean;
+  }
+
   public static DataType parser(String dataType) {
     for (DataType type : values()) {
       if (type.name().equals(dataType)) {
         return type;
       }
     }
-    throw new IllegalArgumentException("不支持的dataType:" + dataType);
+    throw NotSupportException.of("不支持的dataType:" + dataType);
   }
 
   /**
    * 验证Validate是否符当前验证类型
-   * 
-   * @param rules
    */
   @SuppressWarnings({"rawtypes"})
   public void assertValidate(Validate[] rules) {
@@ -54,8 +62,13 @@ public enum DataType {
         targetType = ArrayNode.class;
       } else if (this.isObject()) {
         targetType = ObjectNode.class;
+      } else if (this.isBoolean()) {
+        targetType = Boolean.class;
+      } else if (this.isAny()) {
+        // Any类型不要验证
+        return;
       } else {
-        throw new IllegalArgumentException("不支持的类型`" + this + "`");
+        throw NotSupportException.of("不支持的类型`" + this + "`");
       }
       Method[] methods = validate.getClass().getMethods();
       for (Method m : methods) {
@@ -77,5 +90,9 @@ public enum DataType {
                 + ")");
       }
     }
+  }
+
+  public String toJavaCode() {
+    return "DataType." + this.name();
   }
 }

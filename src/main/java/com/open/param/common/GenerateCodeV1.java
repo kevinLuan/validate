@@ -1,7 +1,7 @@
 package com.open.param.common;
 
-import com.open.param.DataType;
 import com.open.param.Param;
+import com.open.param.ParamAny;
 import com.open.param.ParamArray;
 import com.open.param.ParamBase;
 import com.open.param.ParamObject;
@@ -23,6 +23,8 @@ class GenerateCodeV1 {
       parserObject(param.asObject(), builder);
     } else if (param.isPrimitive()) {
       parserPrimitive(param.asPrimitive(), builder);
+    } else if (param.isAny()) {
+      builder.append(param.asAny().toParamAnyCode());
     } else {
       throw new IllegalArgumentException("不支持的参数:`" + param + "`");
     }
@@ -70,8 +72,10 @@ class GenerateCodeV1 {
           arrayNode += NEW_LINE + childrenCode + ")";
         }
         builder.append(arrayNode);
+      } else if (children.isAny()) {
+        builder.append(children.asAny().toParamAnyCode());
       } else {
-        throw new IllegalArgumentException("不支持的类型:" + children);
+        throw NotSupportException.of("不支持的类型:" + children);
       }
     }
   }
@@ -92,14 +96,15 @@ class GenerateCodeV1 {
         StringBuilder childrenObjectBuilder = new StringBuilder();
         parserObject(param.asObject(), childrenObjectBuilder);
         nodeBuilder.append(childrenObjectBuilder.toString());
-
       } else if (param.isPrimitive()) {
-        StringBuilder stringBuilder = new StringBuilder();
-        parserPrimitive(param.asPrimitive(), stringBuilder);
+        StringBuilder sb = new StringBuilder();
+        parserPrimitive(param.asPrimitive(), sb);
         newLine(nodeBuilder);
-        nodeBuilder.append(stringBuilder.toString());
+        nodeBuilder.append(sb.toString());
+      } else if (param.isAny()) {
+        nodeBuilder.append(param.asAny().toParamAnyCode());
       } else {
-        throw new IllegalArgumentException("不支持的类型`" + param.getDataType() + "`");
+        throw NotSupportException.of("不支持的类型`" + param.getDataType() + "`");
       }
       if (i < childrens.length - 1) {
         nodeBuilder.append(",");
@@ -165,9 +170,5 @@ class GenerateCodeV1 {
       return "\"" + description + "\"";
     }
     return description;
-  }
-
-  public String getType(DataType type) {
-    return "DataType." + type;
   }
 }

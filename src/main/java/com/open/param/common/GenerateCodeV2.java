@@ -1,5 +1,7 @@
 package com.open.param.common;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.node.TextNode;
 import org.apache.commons.lang3.StringUtils;
 import com.open.param.Param;
 import com.open.param.ParamArray;
@@ -22,6 +24,8 @@ class GenerateCodeV2 {
       result = parserObject(param.asObject());
     } else if (param.isPrimitive()) {
       result = parserPrimitive(param.asPrimitive());
+    } else if (param.isAny()) {
+      result = param.asAny().toParamApiCode();
     } else {
       throw new IllegalArgumentException("不支持的参数:`" + param + "`");
     }
@@ -43,7 +47,7 @@ class GenerateCodeV2 {
     return builder.toString();
   }
 
-  private String appendNameAndDesc(String name, String description) {
+  protected static String appendNameAndDesc(String name, String description) {
     StringBuilder builder = new StringBuilder();
     if (StringUtils.isNotBlank(name)) {
       builder.append(".name(\"" + name + "\")");
@@ -83,8 +87,10 @@ class GenerateCodeV2 {
           builder.append(parserObject(param.asObject()));
         } else if (param.isPrimitive()) {
           builder.append(parserPrimitive(param.asPrimitive()));
+        } else if (param.isAny()) {
+          builder.append(param.asAny().toParamApiCode());
         } else {
-          throw new IllegalArgumentException("不支持的类型`" + param.getDataType() + "`");
+          throw NotSupportException.of("不支持的类型`" + param.getDataType() + "`");
         }
         if (i < childrens.length - 1) {
           builder.append(",");
@@ -111,12 +117,20 @@ class GenerateCodeV2 {
       } else {
         sb.append("ParamApi.number()");
       }
+    } else if (primitive.isBoolean()) {
+      if (primitive.isRequired()) {
+        sb.append("ParamApi.bool(true)");
+      } else {
+        sb.append("ParamApi.bool()");
+      }
     } else if (primitive.isString()) {
       if (primitive.isRequired()) {
         sb.append("ParamApi.string(true)");
       } else {
         sb.append("ParamApi.string()");
       }
+    } else {
+      throw NotSupportException.of("不支持的类型`" + primitive.getDataType() + "`");
     }
     sb.append(appendNameAndDesc(primitive.getName(), primitive.getDescription()));
     sb.append(buildExampleValue(primitive));
@@ -126,9 +140,21 @@ class GenerateCodeV2 {
   private String buildExampleValue(ParamPrimitive primitive) {
     if (primitive.getExampleValue() != null) {
       if (primitive.getDataType().isNumber()) {
+        Number number = primitive.asNumber()
+            .parseAndCheck(TextNode.valueOf(primitive.getExampleValue()));
+        if (number.longValue() > Integer.MAX_VALUE) {
+          return ".exampleValue(" + primitive.getExampleValue() + "L)";
+        } else {
+          return ".exampleValue(" + primitive.getExampleValue() + ")";
+        }
+      } else if (primitive.isBoolean()) {
         return ".exampleValue(" + primitive.getExampleValue() + ")";
-      } else {
+      } else if (primitive.isAny()) {
+        return "";
+      } else if (primitive.isString()) {
         return ".exampleValue(\"" + primitive.getExampleValue() + "\")";
+      } else {
+        throw NotSupportException.of("不支持的类型`" + primitive.getDataType() + "`");
       }
     } else {
       return "";

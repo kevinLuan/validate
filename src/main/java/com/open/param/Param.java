@@ -49,6 +49,14 @@ public interface Param {
    */
   ParamObject asObject();
 
+  boolean isAny();
+
+  ParamAny asAny();
+
+  boolean isBoolean();
+
+  ParamBoolean asBoolean();
+
   /**
    * 设置当前节点的父亲节点
    */

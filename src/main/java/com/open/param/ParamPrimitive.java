@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.open.param.common.GenerateCode;
+import com.open.param.common.NotSupportException;
 import com.open.utils.ErrorUtils;
 
 /**
@@ -189,10 +190,14 @@ public class ParamPrimitive extends ParamBase {
    */
   @Override
   public Object parseAndCheck(JsonNode node) {
-    if (dataType == DataType.Number) {
+    if (dataType.isNumber()) {
       return asNumber().parseAndCheck(node);
-    } else {
+    } else if (dataType.isBoolean()) {
+      return asBoolean().parseAndCheck(node);
+    } else if (dataType.isString()) {
       return asString().parseAndCheck(node);
+    } else {
+      throw NotSupportException.of("不支持的类型`" + dataType + "`");
     }
   }
 
@@ -208,19 +213,19 @@ public class ParamPrimitive extends ParamBase {
       if (isRequired()) {
         ParamPrimitive.required(name, dataType, description);
         builder.append("ParamPrimitive.required(" + GenerateCode.formatParam(name) + ","
-            + GenerateCode.getType(dataType) + ","
+            + dataType.toJavaCode() + ","
             + desc + ")");
       } else {
         builder.append("ParamPrimitive.of(" + GenerateCode.formatParam(name) + ","
-            + GenerateCode.getType(dataType) + ", "
+            + dataType.toJavaCode() + ", "
             + desc + ")");
       }
     } else {
       if (isRequired()) {
         builder
-            .append("ParamPrimitive.required(" + GenerateCode.getType(dataType) + "," + desc + ")");
+            .append("ParamPrimitive.required(" + dataType.toJavaCode() + "," + desc + ")");
       } else {
-        builder.append("ParamPrimitive.of(" + GenerateCode.getType(dataType) + "," + desc + ")");
+        builder.append("ParamPrimitive.of(" + dataType.toJavaCode() + "," + desc + ")");
       }
     }
     builder.append(GenerateCode.buildExampleValue(this));

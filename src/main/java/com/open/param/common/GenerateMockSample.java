@@ -30,8 +30,10 @@ public class GenerateMockSample {
       element = object(param.asObject());
     } else if (param.isPrimitive()) {
       element = primitive(param.asPrimitive());
+    } else if (param.isAny()) {
+      return null;//Any类型数据不生成Mock数据
     } else {
-      throw new IllegalArgumentException("不支持的类型:" + param);
+      throw NotSupportException.of("不支持的类型:" + param);
     }
     return element.toString();
   }

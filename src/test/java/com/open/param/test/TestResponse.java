@@ -1,7 +1,9 @@
 package com.open.param.test;
 
+import com.open.param.ParamAny;
 import com.open.param.api.ParamApi;
 import com.open.param.common.GenerateCode;
+import com.sun.tools.javah.Gen;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -230,11 +232,9 @@ public class TestResponse {
                       ParamApi.string().name("name").exampleValue("张三")
                           .allMatch(StringValidate.INSTANCE),
                       ParamApi.array().name("array").children(
-                          ParamApi.number().exampleValue(1)
-                      ),
-                      ParamApi.number().name("num").exampleValue("1").anyMatch(TestEnum.values())
-                  ).allMatch(ObjectValidate.INSTANCE))
-      );
+                          ParamApi.number().exampleValue(1)),
+                      ParamApi.number().name("num").exampleValue("1").anyMatch(TestEnum.values()))
+                      .allMatch(ObjectValidate.INSTANCE)));
 
       JsonNode data = JsonUtils.parser(json);
       JsonValidate.of(param).check(data);
@@ -247,4 +247,292 @@ public class TestResponse {
     }
   }
 
+  @Test
+  public void testAnyType() {
+    String json =
+        "{\"status\":{\"status_code\":0,\"status_reason\":\"\"},\"result\":{\"itemId\":29755640,\"headImg\":\"https://si.geilicdn.com/pcitem173115993-36cc0000016d48822cdd0a20b7b9_500_500.jpg\",\"title\":\"有sku的\",\"hasSku\":true,\"supplierPrice\":20,\"totalStock\":19,\"createTime\":1568182381000,\"editTime\":1568879626000,\"itemDetail\":[{\"type\":1,\"text\":\"商详模块1\",\"link\":null,\"goods\":null,\"diary\":null,\"coupon\":null,\"vgroup\":null,\"url\":null,\"faceUrl\":null,\"videoType\":null,\"data\":null,\"videoId\":null}],\"skus\":[{\"title\":\"sku\",\"itemId\":2975255640,\"skuId\":17189308090,\"supplierPrice\":20,\"suggestPrice\":30,\"stock\":19,\"merchantCode\":\"广东湿\",\"img\":\"\"}],\"expressFee\":{\"bindingTemplate\":{\"expressInfoStr\":\"默认运费:100件内10.0元, 每增加1件, 增加运费0.0元\",\"templateName\":\"默认运费模版\",\"templateId\":5764002},\"bindingRemoteTemplate\":{\"expressInfoStr\":\"\",\"areaNames\":\"海南,西藏,新疆,香港,澳门,内蒙古,台湾,宁夏,甘肃,青海\",\"templateName\":\"包邮(除偏远地区)\",\"templateId\":2},\"freeDelivery\":false,\"remoteExclude\":false}}}";
+    String javaCode = GenerateCode.getJavaCodeV2(json);
+    System.out.print(javaCode);
+    Param param = ParamApi.object().children(
+        ParamApi.object().name("status")
+            .children(
+                ParamApi.number().name("status_code").exampleValue(0),
+                ParamApi.string().name("status_reason").exampleValue("")),
+        ParamApi.object().name("result")
+            .children(
+                ParamApi.number().name("itemId").exampleValue(29755640),
+                ParamApi.string().name("headImg").exampleValue(
+                    "https://si.geilicdn.com/pcitem173115993-36cc0000016d48822cdd0a20b7b9_500_500.jpg"),
+                ParamApi.string().name("title").exampleValue("有sku的"),
+                ParamApi.bool().name("hasSku").exampleValue(true),
+                ParamApi.number().name("supplierPrice").exampleValue(20),
+                ParamApi.number().name("totalStock").exampleValue(19),
+                ParamApi.number().name("createTime").exampleValue(1568182381000L),
+                ParamApi.number().name("editTime").exampleValue(1568879626000L),
+                ParamApi.array().name("itemDetail").children(
+                    ParamApi.object().children(
+                        ParamApi.number().name("type").exampleValue(1),
+                        ParamApi.string().name("text").exampleValue("商详模块1"),
+                        ParamApi.any().name("link"),
+                        ParamApi.any().name("goods"),
+                        ParamApi.any().name("diary"),
+                        ParamApi.any().name("coupon"),
+                        ParamApi.any().name("vgroup"),
+                        ParamApi.any().name("url"),
+                        ParamApi.any().name("faceUrl"),
+                        ParamApi.any().name("videoType"),
+                        ParamApi.any().name("data"),
+                        ParamApi.any().name("videoId"))),
+                ParamApi.array().name("skus")
+                    .children(
+                        ParamApi.object().children(
+                            ParamApi.string().name("title").exampleValue("sku"),
+                            ParamApi.number().name("itemId").exampleValue(2975255640L),
+                            ParamApi.number().name("skuId").exampleValue(17189308090L),
+                            ParamApi.number().name("supplierPrice").exampleValue(20),
+                            ParamApi.number().name("suggestPrice").exampleValue(30),
+                            ParamApi.number().name("stock").exampleValue(19),
+                            ParamApi.string().name("merchantCode").exampleValue("广东湿"),
+                            ParamApi.string().name("img")
+                                .exampleValue(""))),
+                ParamApi.object().name("expressFee")
+                    .children(
+                        ParamApi.object().name("bindingTemplate")
+                            .children(
+                                ParamApi.string().name("expressInfoStr")
+                                    .exampleValue("默认运费:100件内10.0元, 每增加1件, 增加运费0.0元"),
+                                ParamApi.string().name("templateName").exampleValue("默认运费模版"),
+                                ParamApi.number().name("templateId").exampleValue(5764002)),
+                        ParamApi.object().name("bindingRemoteTemplate")
+                            .children(
+                                ParamApi.string().name("expressInfoStr").exampleValue(""),
+                                ParamApi.string().name("areaNames")
+                                    .exampleValue("海南,西藏,新疆,香港,澳门,内蒙古,台湾,宁夏,甘肃,青海"),
+                                ParamApi.string().name("templateName").exampleValue("包邮(除偏远地区)"),
+                                ParamApi.number().name("templateId").exampleValue(2)),
+                        ParamApi.bool().name("freeDelivery").exampleValue(false),
+                        ParamApi.bool().name("remoteExclude").exampleValue(false))));
+    String code2 = GenerateCode.getJavaCodeV2(param);
+    Assert.assertEquals(code2, javaCode);
+  }
+
+  @Test
+  public void testAnyCheck() {
+    String json = ("{"
+        + "    'status':{"
+        + "        'status_code':0,"
+        + "        'status_reason':''"
+        + "    },"
+        + "    'result':{"
+        + "        'attr_list':["
+        + "            {"
+        + "                'attr_title':'颜色',"
+        + "                'attr_values':["
+        + "                    {"
+        + "                        'attr_id':770182,"
+        + "                        'attr_value':'白色'"
+        + "                    },"
+        + "                    {"
+        + "                        'attr_id':770183,"
+        + "                        'attr_value':'红色'"
+        + "                    }"
+        + "                ]"
+        + "            }"
+        + "        ]"
+        + "    }"
+        + "}").replace('\'', '"');
+    String expected = "ParamApi.object().children(\n"
+        + "ParamApi.object().name(\"status\")\n"
+        + ".children(\n"
+        + "ParamApi.number().name(\"status_code\")\n"
+        + ".exampleValue(0)\n"
+        + ",\n"
+        + "ParamApi.string().name(\"status_reason\")\n"
+        + ".exampleValue(\"\")\n"
+        + ")\n"
+        + ",\n"
+        + "ParamApi.object().name(\"result\")\n"
+        + ".children(\n"
+        + "ParamApi.array().name(\"attr_list\")\n"
+        + ".children(\n"
+        + "ParamApi.object().children(\n"
+        + "ParamApi.string().name(\"attr_title\")\n"
+        + ".exampleValue(\"颜色\")\n"
+        + ",\n"
+        + "ParamApi.array().name(\"attr_values\")\n"
+        + ".children(\n"
+        + "ParamApi.object().children(\n"
+        + "ParamApi.number().name(\"attr_id\")\n"
+        + ".exampleValue(770182)\n"
+        + ",\n"
+        + "ParamApi.string().name(\"attr_value\")\n"
+        + ".exampleValue(\"白色\")\n"
+        + ")\n"
+        + ")\n"
+        + ")\n"
+        + ")\n"
+        + ")\n"
+        + ");";
+    Assert.assertEquals(expected, GenerateCode.getJavaCodeV2(json));
+
+    Param param = ParamApi.object().children(
+        ParamApi.object().name("status")
+            .children(
+                ParamApi.number().name("status_code"),
+                ParamApi.string().name("status_reason")
+            )
+        ,
+        ParamApi.object().name("result")
+            .children(
+                ParamApi.array().name("attr_list")
+                    .children(
+                        ParamApi.object().children(
+                            ParamApi.string().name("attr_title").exampleValue("颜色"),
+                            ParamApi.array().name("attr_values")
+                                .children(
+                                    ParamApi.object().children(
+                                        ParamApi.number().name("attr_id").exampleValue(770182),
+                                        ParamApi.string().name("attr_value").exampleValue("白色")
+                                    )
+                                )
+                        )
+                    )
+            )
+    );
+    JsonValidate.of(param).check(json);
+  }
+
+  @Test
+  public void testAny() {
+    String json = ("{"
+        + "    'status':{"
+        + "        'status_code':0,"
+        + "        'ext':[true,false]"
+        + "    },"
+        + "    'result':{"
+        + "        'attr_list':["
+        + "            {"
+        + "                'attr_title':'颜色',"
+        + "                'attr_values':["
+        + "                    {"
+        + "                        'attr_id':770182,"
+        + "                        'attr_value':'白色',"
+        + "                        'status':true"
+        + "                    },"
+        + "                    {"
+        + "                        'attr_id':770183"
+        + "                    }"
+        + "                ]"
+        + "            }"
+        + "        ]"
+        + "    }"
+        + "}").replace('\'', '"');
+    {
+      Param param = ParamApi.object().children(
+          ParamApi.object().name("status")
+              .children(
+                  ParamApi.any(true).name("ext").description("扩展字段可以时任意类型")
+              )
+      );
+      JsonValidate.of(param).check(json);
+    }
+    //TODO 测试Any类型为必传值
+    {
+      Param param = ParamApi.object().children(
+          ParamApi.object().name("result")
+              .children(
+                  ParamApi.array().name("attr_list")
+                      .children(
+                          ParamApi.object().children(
+                              ParamApi.array().name("attr_values")
+                                  .children(
+                                      ParamApi.object().children(
+                                          ParamApi.any(true).name("attr_value")
+                                      )
+                                  )
+                          )
+                      )
+              )
+      );
+      try {
+        JsonValidate.of(param).check(json);
+        Assert.fail("没有出现预期错误");
+      } catch (IllegalArgumentException ex) {
+        Assert.assertEquals("`result.attr_list.attr_values.attr_value`数据缺失", ex.getMessage());
+      }
+    }
+    //TODO 测试Array的Value为Any类型
+    {
+      Param param = ParamApi.object().children(
+          ParamApi.object().name("result")
+              .children(
+                  ParamApi.array().name("attr_list")
+                      .children(
+                          ParamApi.object().children(
+                              ParamApi.array().name("attr_values").children(ParamApi.any())
+                          )
+                      )
+              )
+      );
+      JsonValidate.of(param).check(json);
+    }
+
+    //TODO
+    {
+      Param param = ParamApi.object().children(
+          ParamApi.any(true).name("result"),
+          ParamApi.any(true).name("status")
+      );
+      JsonValidate.of(param).check(json);
+      JsonValidate.of(ParamApi.any()).check(json);
+    }
+    //TODO 测试Boolean 必须值
+    {
+      Param param = ParamApi.object().children(
+          ParamApi.object().name("result")
+              .children(
+                  ParamApi.array().name("attr_list")
+                      .children(
+                          ParamApi.object().children(
+                              ParamApi.array().name("attr_values")
+                                  .children(
+                                      ParamApi.object().children(
+                                          ParamApi.bool(true).name("status")
+                                      )
+                                  )
+                          )
+                      )
+              )
+      );
+      try {
+        JsonValidate.of(param).check(json);
+      } catch (IllegalArgumentException ex) {
+        ex.printStackTrace();
+        Assert.assertEquals("`result.attr_list.attr_values.status`数据缺失", ex.getMessage());
+      }
+    }
+    {
+      Param param = ParamApi.object().children(
+          ParamApi.object().name("result")
+              .children(
+                  ParamApi.array().name("attr_list")
+                      .children(
+                          ParamApi.object().children(
+                              ParamApi.array().name("attr_values")
+                                  .children(
+                                      ParamApi.object().children(
+                                          ParamApi.bool().name("status")
+                                      )
+                                  )
+                          )
+                      )
+              )
+      );
+      try {
+        JsonValidate.of(param).check(json);
+      } catch (IllegalArgumentException ex) {
+        Assert.assertEquals("`result.attr_list.attr_values.status`数据缺失", ex.getMessage());
+      }
+    }
+  }
 }

@@ -1,5 +1,6 @@
 package com.open.param.core;
 
+import com.open.param.ParamAny;
 import com.open.param.ParamBase;
 import java.util.List;
 import org.slf4j.Logger;
@@ -10,10 +11,11 @@ import com.open.param.ParamObject;
 
 /**
  * 对象父级节点引用设置
- * 
+ *
  * @author KEVIN LUAN
  */
 public class ParentReference {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(ParentReference.class);
 
   public static void refreshParentReference(List<Param> params) {
@@ -65,6 +67,8 @@ public class ParentReference {
           pm.setParentNode(object);
         } else if (pm.isArray()) {
           arrayParam(pm.asArray(), object);
+        } else if (pm.isAny()) {
+          pm.setParentNode((ParamBase) parent);
         } else {
           LOGGER.warn("没有父级引用类型->" + pm);
         }

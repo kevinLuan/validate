@@ -60,11 +60,11 @@ public class ApiResponse extends ApiBase<JsonNode> {
 
   @Override
   public String getTipError(String path) {
-    return "下游服务返回数据错误->`" + path + "`";
+    return "`" + path + "`数据缺失";
   }
 
   @Override
   public String getTipMissing(String path) {
-    return "下游服务返回数据缺失->`" + path + "`";
+    return "`" + path + "`数据缺失";
   }
 }

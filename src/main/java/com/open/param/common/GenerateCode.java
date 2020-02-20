@@ -1,6 +1,5 @@
 package com.open.param.common;
 
-import com.open.param.DataType;
 import com.open.param.Param;
 import com.open.param.ParamPrimitive;
 
@@ -32,10 +31,6 @@ public class GenerateCode {
 
   public static String formatParam(String str) {
     return GenerateCodeV1.INSTANCE.formatParam(str);
-  }
-
-  public static String getType(DataType type) {
-    return GenerateCodeV1.INSTANCE.getType(type);
   }
 
   public static Object buildExampleValue(ParamPrimitive primitive) {
