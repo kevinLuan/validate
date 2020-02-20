@@ -1,8 +1,11 @@
 package com.open.param.test;
 
 import com.open.param.ParamAny;
+import com.open.param.ParamBase;
 import com.open.param.api.ParamApi;
 import com.open.param.common.GenerateCode;
+import com.open.param.core.AdjustParamInstance;
+import com.open.param.core.ParentReference;
 import com.sun.tools.javah.Gen;
 import java.util.ArrayList;
 import java.util.Date;
@@ -398,9 +401,14 @@ public class TestResponse {
                         )
                     )
             )
-    );
-    JsonValidate.of(param).check(json);
+    ).optimize();
+    long start=System.currentTimeMillis();
+    for(int i=0;i<10000;i++) {
+      JsonValidate.of(param).check(json);
+    }
+    System.out.println("执行1000次耗时:"+(System.currentTimeMillis()-start));
   }
+
 
   @Test
   public void testAny() {

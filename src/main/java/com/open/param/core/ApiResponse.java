@@ -22,8 +22,7 @@ public class ApiResponse extends ApiBase<JsonNode> {
 
   @Override
   public ApiResponse setReference() {
-    responseParam = AdjustParamInstance.adjust(responseParam);
-    ParentReference.refreshParentReference(responseParam);
+    responseParam = responseParam.optimize();
     return this;
   }
 

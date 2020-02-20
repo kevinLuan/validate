@@ -121,4 +121,9 @@ public interface Param {
   ParamNumber asNumber();
 
   ParamString asString();
+
+  /**
+   * 性能优化并返回优化后的对象实例
+   */
+  Param optimize();
 }

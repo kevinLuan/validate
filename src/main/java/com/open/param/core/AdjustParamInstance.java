@@ -38,11 +38,11 @@ public class AdjustParamInstance {
 
   /**
    * 将ParamBase类型转化到具体Param子类型
-   * @param _param
+   * @param p
    * @return
    */
-  public static Param adjust(Param _param) {
-    Param refParam = _param;
+  public static Param adjust(Param p) {
+    Param refParam = p;
     if (refParam.isArray()) {
       refParam = refParam.asArray();
       refreshChildrens(refParam.asArray().getChildren());

@@ -1,5 +1,7 @@
 package com.open.param;
 
+import com.open.param.core.AdjustParamInstance;
+import com.open.param.core.ParentReference;
 import java.util.Arrays;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +37,9 @@ public class ParamBase implements Param {
   protected Validate[] anyMatchs = new Validate[0];
   // 全部匹配
   protected Validate[] allMatchs = new Validate[0];
+  @JsonIgnore
+  //优化状态
+  private transient boolean optimizeStatus = false;
 
   @Override
   public Param anyMatch(Validate... rules) {
@@ -302,5 +307,14 @@ public class ParamBase implements Param {
     throw ErrorUtils.newClassCastException(this.getClass(), ParamBoolean.class);
   }
 
-
+  @Override
+  public Param optimize() {
+    if (this.optimizeStatus==false) {
+      ParamBase param = (ParamBase) AdjustParamInstance.adjust(this);
+      ParentReference.refreshParentReference(param);
+      param.optimizeStatus = true;
+      return param;
+    }
+    return this;
+  }
 }
