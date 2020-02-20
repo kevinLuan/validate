@@ -224,7 +224,7 @@ public class TestResponse {
           + ".exampleValue(\"1\")\n"
           + ")\n"
           + ")\n"
-          + ");";
+          + ").optimize();";
       Assert.assertEquals(expected, code);
     }
     {
@@ -375,7 +375,7 @@ public class TestResponse {
         + ")\n"
         + ")\n"
         + ")\n"
-        + ");";
+        + ").optimize();";
     Assert.assertEquals(expected, GenerateCode.getJavaCodeV2(json));
 
     Param param = ParamApi.object().children(

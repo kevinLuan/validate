@@ -7,7 +7,7 @@ public class GenerateCode {
 
   public static String getJavaCodeV1(String jsonData) {
     Param param = JsonConverter.INSTANCE.convert(jsonData);
-    return GenerateCodeV1.INSTANCE.getJavaCode(param);
+    return getJavaCodeV1(param);
   }
 
   /**
@@ -19,7 +19,7 @@ public class GenerateCode {
 
   public static String getJavaCodeV2(String jsonData) {
     Param param = JsonConverter.INSTANCE.convert(jsonData);
-    return GenerateCodeV2.INSTANCE.getJavaCode(param);
+    return getJavaCodeV2(param);
   }
 
   /**

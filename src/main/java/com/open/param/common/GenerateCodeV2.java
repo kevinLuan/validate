@@ -32,7 +32,7 @@ class GenerateCodeV2 {
     if (result != null && result.endsWith("\n")) {
       result = result.substring(0, result.length() - 1);
     }
-    return result + ";";
+    return result + ".optimize();";
   }
 
   private String parserArray(ParamArray array) {

@@ -32,7 +32,7 @@ class GenerateCodeV1 {
     if (result.endsWith(NEW_LINE)) {
       result = result.substring(0, result.length() - NEW_LINE.length());
     }
-    return result.replace("\n\n", "\n") + ";";
+    return result.replace("\n\n", "\n") + ".optimize();";
   }
 
   private void parserArray(ParamArray array, StringBuilder builder) {

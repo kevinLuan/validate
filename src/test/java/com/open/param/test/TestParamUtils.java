@@ -145,7 +145,7 @@ public class TestParamUtils {
         + "ParamPrimitive.of('id',DataType.Number, '2')\n"//
         + ")\n),\n"//
         + "ParamPrimitive.of('age',DataType.Number, '100.11')\n" //
-        + ");";
+        + ").optimize();";
     expected = expected.replace("'", "\"");
     Assert.assertEquals(expected, code);
   }
@@ -190,7 +190,7 @@ public class TestParamUtils {
             + "ParamString.of(\"id\",\"ID\").setExampleValue(\"1234\"),\n"
             + "ParamString.of(\"name\",\"名称\").setExampleValue(\"xxx\")\n"
             + ")\n"
-            + ");";
+            + ").optimize();";
     expected = expected.replace("'", "\"");
     String actual = GenerateCode.getJavaCodeV1(param);
     System.out.println(actual);
@@ -205,7 +205,7 @@ public class TestParamUtils {
               ParamPrimitive.of("id", DataType.String, "ID").setExampleValue("1234"), //
               ParamPrimitive.of("name", DataType.String, "名称").setExampleValue("xxx")//
           )//
-      );
+      ).optimize();
     }
   }
 
@@ -225,7 +225,7 @@ public class TestParamUtils {
               + "ParamNumber.of(\"id\",\"ID\").setExampleValue(1234),\n"
               + "ParamString.of(\"name\",\"名称\").setExampleValue(\"xxx\")\n"
               + ")\n"
-              + ");";
+              + ").optimize();";
       expected = expected.replace("'", "\"");
       String actual = GenerateCode.getJavaCodeV1(param);
       System.out.println(actual);
@@ -250,7 +250,7 @@ public class TestParamUtils {
           + "ParamApi.string().name(\"name\").description(\"名称\")\n"
           + ".exampleValue(\"xxx\")\n"
           + ")\n"
-          + ");";
+          + ").optimize();";
       String actual = GenerateCode.getJavaCodeV2(param);
       System.out.println(actual);
       Assert.assertEquals(expected, actual);
