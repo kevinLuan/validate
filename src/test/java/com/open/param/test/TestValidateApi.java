@@ -26,7 +26,7 @@ import com.open.validate.impl.ObjectValidate;
 import com.open.validate.impl.StringValidate;
 import com.open.validate.impl.TestEnum;
 
-public class TestResponse {
+public class TestValidateApi {
 
   @After
   public void after() {
