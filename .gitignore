@@ -3,5 +3,7 @@
 .project
 .settings/
 validate.iml
-
+.DS_Store
+src/.DS_Store
 /target/
+
