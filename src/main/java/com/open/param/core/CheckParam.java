@@ -155,7 +155,7 @@ class CheckParam {
       } else if (p.isPrimitive()) {
         p.asPrimitive().asserValue(value);
       } else if (p.isAny()) {
-        p.asAny().asserValue(jsonNode);
+        p.asAny().asserValue(value);
       } else {
         throw NotSupportException.of("不支持的类型" + p);
       }

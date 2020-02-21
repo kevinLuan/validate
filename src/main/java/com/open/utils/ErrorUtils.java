@@ -57,4 +57,8 @@ public class ErrorUtils {
   public static ClassCastException newClassCastException(Class<?> src, Class<?> dest) {
     throw new ClassCastException(src.getName() + " cannot be cast to " + dest.getName());
   }
+
+  public static ClassCastException newClassCastException(Param src, Class<?> dest) {
+    throw new ClassCastException(src.getClass().getName() + " cannot be cast to " + dest.getName());
+  }
 }

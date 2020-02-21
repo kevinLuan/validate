@@ -5,7 +5,6 @@ import com.open.param.core.ParentReference;
 import java.util.Arrays;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
-import org.omg.CORBA.Any;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.open.json.api.GsonSerialize;
@@ -38,7 +37,7 @@ public class ParamBase implements Param {
   // 全部匹配
   protected Validate[] allMatchs = new Validate[0];
   @JsonIgnore
-  //优化状态
+  // 优化状态
   private transient boolean optimizeStatus = false;
 
   @Override
@@ -67,8 +66,7 @@ public class ParamBase implements Param {
     return allMatchs;
   }
 
-  public ParamBase() {
-  }
+  public ParamBase() {}
 
   public ParamBase(String name, boolean required, DataType dataType, String description) {
     this.name = name;
@@ -285,7 +283,7 @@ public class ParamBase implements Param {
           .allMatch(getAllMatchRule())
           .asAny();
     }
-    throw ErrorUtils.newClassCastException(this.getClass(), Any.class);
+    throw ErrorUtils.newClassCastException(this, ParamAny.class);
   }
 
   @Override
@@ -309,7 +307,7 @@ public class ParamBase implements Param {
 
   @Override
   public Param optimize() {
-    if (this.optimizeStatus==false) {
+    if (this.optimizeStatus == false) {
       ParamBase param = (ParamBase) AdjustParamInstance.adjust(this);
       ParentReference.refreshParentReference(param);
       param.optimizeStatus = true;
