@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class JsonHelper {
 
@@ -34,16 +35,18 @@ public class JsonHelper {
   }
 
   /**
-   * 深度遍历
+   * 深度遍历,如果path叶子节点为array的话，consumer消费传入的为数组中的每个原数
    *
    * @param path
    */
-  public void deepTraversal(String path, IteratorFunc func) {
+  public int deepTraversal(String path, Consumer<JsonNode> func) {
     String[] nodes = parsePath(path);
     if (this._jsonNode.isObject()) {
-      doDeepSearch(path, (ObjectNode) this._jsonNode, nodes, null, null, Option.traversal, func);
+      return doDeepSearch(path, (ObjectNode) this._jsonNode, nodes, null, null, Option.traversal,
+          func);
     } else if (this._jsonNode.isArray()) {
-      doDeepSearch(path, (ArrayNode) this._jsonNode, nodes, null, null, Option.traversal, func);
+      return doDeepSearch(path, (ArrayNode) this._jsonNode, nodes, null, null, Option.traversal,
+          func);
     } else {
       throw new IllegalArgumentException("不支持的:" + path + "节点");
     }
@@ -55,15 +58,22 @@ public class JsonHelper {
    * @param path
    * @param value
    */
-  public void missingAndSet(String path, String value) {
+  public int missingAndSet(String path, String value) {
     String[] nodes = parsePath(path);
     if (this._jsonNode.isObject()) {
-      deepSearch(path, (ObjectNode) this._jsonNode, nodes, null, value, Option.missingAndAdd);
+      return deepSearch(path, (ObjectNode) this._jsonNode, nodes, null, value,
+          Option.missingAndAdd);
     } else if (this._jsonNode.isArray()) {
-      deepSearch(path, (ArrayNode) this._jsonNode, nodes, null, value, Option.missingAndAdd);
+      return deepSearch(path, (ArrayNode) this._jsonNode, nodes, null, value, Option.missingAndAdd);
     } else {
-      throw new IllegalArgumentException("不支持的:" + path + "节点");
+      throw throwError(path, "", this._jsonNode);
     }
+  }
+
+  private IllegalArgumentException throwError(String path, String node, JsonNode jsonNode) {
+    throw new IllegalArgumentException(
+        "path:`" + path + "`中存在不支持的操作(node:`" + node + "` dataType:`" + jsonNode
+            .getNodeType() + "`)");
   }
 
   /**
@@ -81,16 +91,20 @@ public class JsonHelper {
         if (root == null) {
           if (failover) {
             return null;
-          } else {
-            throw new IllegalArgumentException("存在无效node:`" + nodes[i] + "` path:" + path);
           }
+          throw throwError(path, nodes[i], root);
+        } else if (!root.isObject()) {
+          throw throwError(path, nodes[i], root);
         }
       }
       if (root.isObject()) {
         return root.get(nodes[nodes.length - 1]);
+      } else {
+        throw throwError(path, nodes[nodes.length - 1], root);
       }
     }
-    throw new IllegalArgumentException("不支持的node操作:" + root.getNodeType());
+    throw new IllegalArgumentException(
+        "不支持的node操作:`" + root.getNodeType() + "` path:`" + path + "`");
   }
 
   /**
@@ -99,12 +113,12 @@ public class JsonHelper {
    * @param path
    * @return
    */
-  public void delete(String path) {
+  public int delete(String path) {
     String[] nodes = parsePath(path);
     if (this._jsonNode.isObject()) {
-      deepSearch(path, (ObjectNode) this._jsonNode, nodes, null, null, Option.delete);
+      return deepSearch(path, (ObjectNode) this._jsonNode, nodes, null, null, Option.delete);
     } else if (this._jsonNode.isArray()) {
-      deepSearch(path, (ArrayNode) this._jsonNode, nodes, null, null, Option.delete);
+      return deepSearch(path, (ArrayNode) this._jsonNode, nodes, null, null, Option.delete);
     } else {
       throw new IllegalArgumentException("不支持的:" + path + "节点");
     }
@@ -116,12 +130,14 @@ public class JsonHelper {
    * @param path
    * @param expect
    */
-  public void compareAndDelete(String path, String expect) {
+  public int compareAndDelete(String path, String expect) {
     String[] nodes = parsePath(path);
     if (this._jsonNode.isObject()) {
-      deepSearch(path, (ObjectNode) this._jsonNode, nodes, expect, null, Option.compareAndDel);
+      return deepSearch(path, (ObjectNode) this._jsonNode, nodes, expect, null,
+          Option.compareAndDel);
     } else if (this._jsonNode.isArray()) {
-      deepSearch(path, (ArrayNode) this._jsonNode, nodes, expect, null, Option.compareAndDel);
+      return deepSearch(path, (ArrayNode) this._jsonNode, nodes, expect, null,
+          Option.compareAndDel);
     } else {
       throw new IllegalArgumentException("不支持的:" + path + "节点");
     }
@@ -190,94 +206,110 @@ public class JsonHelper {
    * @param update
    * @return
    */
-  public void compareAndSet(String path, String expect, String update) {
+  public int compareAndSet(String path, String expect, String update) {
     String[] nodes = parsePath(path);
     if (this._jsonNode.isObject()) {
-      deepSearch(path, (ObjectNode) this._jsonNode, nodes, expect, update, Option.compareAndSet);
+      return deepSearch(path, (ObjectNode) this._jsonNode, nodes, expect, update,
+          Option.compareAndSet);
     } else if (this._jsonNode.isArray()) {
-      deepSearch(path, (ArrayNode) this._jsonNode, nodes, expect, update, Option.compareAndSet);
+      return deepSearch(path, (ArrayNode) this._jsonNode, nodes, expect, update,
+          Option.compareAndSet);
     } else {
-      throw new IllegalArgumentException("不支持的:" + path + "节点");
+      throw throwError(path, "", this._jsonNode);
     }
   }
 
-  private void deepSearch(String path, ObjectNode objectNode, String[] nodes, String expect,
+  private int deepSearch(String path, ObjectNode objectNode, String[] nodes, String expect,
       String update, Option option) {
-    doDeepSearch(path, objectNode, nodes, expect, update, option, null);
+    return doDeepSearch(path, objectNode, nodes, expect, update, option, null);
   }
 
-  private void doDeepSearch(String path, ObjectNode objectNode, String[] nodes, String expect,
-      String update, Option option, IteratorFunc func) {
+  private int doDeepSearch(String path, ObjectNode objectNode, String[] nodes, String expect,
+      String update, Option option, Consumer<JsonNode> func) {
     JsonNode root = objectNode;
     for (int i = 0; i < nodes.length - 1; i++) {
       root = root.get(nodes[i]);
       if (root == null) {
         if (failover) {
-          return;
+          return 0;
         } else {
-          throw new IllegalArgumentException("无效的节点`" + nodes[i] + "` path:" + path);
+          throw throwError(path, nodes[i], root);
         }
       } else if (root.isObject()) {
         continue;
       } else if (root.isArray()) {
         String array[] = new String[nodes.length - i - 1];
         System.arraycopy(nodes, i + 1, array, 0, array.length);
-        doDeepSearch(path, (ArrayNode) root, array, expect, update, option, func);
-        return;
+        return doDeepSearch(path, (ArrayNode) root, array, expect, update, option, func);
       } else {
-        throw new IllegalArgumentException("无效的节点:`" + nodes[i] + "` path:" + path);
+        throw throwError(path, nodes[i], root);
       }
     }
     String name = nodes[nodes.length - 1];
-    nodeOperator(name, expect, update, root, option, func);
+    return nodeOperator(path, name, expect, update, root, option, func);
   }
 
-  private void nodeOperator(String name, String expect, String update, JsonNode root,
-      Option option, IteratorFunc func) {
+  private int nodeOperator(String path, String name, String expect, String update, JsonNode root,
+      Option option, Consumer<JsonNode> func) {
     if (root.isObject()) {
       ObjectNode objNode = (ObjectNode) root;
-      process(name, expect, update, option, func, objNode);
+      return process(name, expect, update, option, func, objNode);
     } else if (root.isArray()) {
+      int count = 0;
       for (int i = 0; i < root.size(); i++) {
         if (root.get(i).isObject()) {
           ObjectNode objNode = (ObjectNode) root.get(i);
-          process(name, expect, update, option, func, objNode);
+          return process(name, expect, update, option, func, objNode);
         } else {
-          throw new IllegalArgumentException("无效的节点");
+          throw throwError(path, name, root.get(i));
         }
       }
+      return count;
     } else {
-      throw new IllegalArgumentException("无效的节点");
+      throw throwError(path, name, root);
     }
   }
 
-  private void process(String name, String expect, String update, Option option, IteratorFunc func,
+  private int process(String name, String expect, String update, Option option,
+      Consumer<JsonNode> func,
       ObjectNode objNode) {
     if (option == Option.compareAndSet) {
       if (checkValueEq(objNode, name, expect)) {
         objNode.put(name, update);
+        return 1;
       }
     } else if (option == Option.set) {
       objNode.put(name, update);
+      return 1;
     } else if (option == Option.delete) {
       objNode.remove(name);
+      return 1;
     } else if (option == Option.compareAndDel) {
       if (checkValueEq(objNode, name, expect)) {
         objNode.remove(name);
+        return 1;
       }
     } else if (option == Option.missingAndAdd) {
       JsonNode value = objNode.get(name);
       if (value == null || value.isMissingNode()) {
         objNode.put(name, update);
+        return 1;
       }
     } else if (option == Option.traversal) {
       JsonNode value = objNode.get(name);
       if (value != null) {
-        func.run(value);
+        if (value.isArray()) {
+          value.forEach(func);
+          return value.size();
+        } else {
+          func.accept(value);
+          return 1;
+        }
       }
     } else {
       throw new IllegalArgumentException("不支持的option:" + option);
     }
+    return 0;
   }
 
   /**
@@ -299,40 +331,32 @@ public class JsonHelper {
     }
   }
 
-  private void deepSearch(String path, ArrayNode arrayNode, String[] nodes, String expect,
+  private int deepSearch(String path, ArrayNode arrayNode, String[] nodes, String expect,
       String update, Option option) {
-    doDeepSearch(path, arrayNode, nodes, expect, update, option, null);
+    return doDeepSearch(path, arrayNode, nodes, expect, update, option, null);
   }
 
-  private void doDeepSearch(String path, ArrayNode arrayNode, String[] nodes, String expect,
-      String update, Option option, IteratorFunc func) {
+  private int doDeepSearch(String path, ArrayNode arrayNode, String[] nodes, String expect,
+      String update, Option option, Consumer<JsonNode> func) {
+    int count = 0;
     for (int i = 0; i < arrayNode.size(); i++) {
       if (arrayNode.get(i).isObject()) {
-        doDeepSearch(path, (ObjectNode) arrayNode.get(i), nodes, expect, update, option, func);
+        count += doDeepSearch(path, (ObjectNode) arrayNode.get(i), nodes, expect, update, option,
+            func);
       } else {
-        throw new IllegalArgumentException("无效的Node");
+        throw throwError(path, nodes[0], arrayNode);
       }
     }
+    return count;
   }
 
   /**
    * 遍历ArrayNode节点
    */
-  public void foreach(IteratorFunc func) {
-    if (this._jsonNode != null && this._jsonNode.isArray()) {
-      for (int i = 0; i < _jsonNode.size(); i++) {
-        func.run(_jsonNode.get(i));
-      }
-    } else {
-      throw new IllegalArgumentException("foreach操作仅在ArrayNode节点下可以支持 " + this._jsonNode);
+  public void forEach(Consumer<JsonNode> func) {
+    if (this._jsonNode != null) {
+      this._jsonNode.forEach(func);
     }
-  }
-
-  @FunctionalInterface
-  public interface IteratorFunc {
-
-    void run(JsonNode node);
-
   }
 
   /**
@@ -341,14 +365,14 @@ public class JsonHelper {
    * @param path
    * @param value
    */
-  public void set(String path, String value) {
+  public int set(String path, String value) {
     String[] nodes = parsePath(path);
     if (this._jsonNode.isObject()) {
-      deepSearch(path, (ObjectNode) this._jsonNode, nodes, null, value, Option.set);
+      return deepSearch(path, (ObjectNode) this._jsonNode, nodes, null, value, Option.set);
     } else if (this._jsonNode.isArray()) {
-      deepSearch(path, (ArrayNode) this._jsonNode, nodes, null, value, Option.set);
+      return deepSearch(path, (ArrayNode) this._jsonNode, nodes, null, value, Option.set);
     } else {
-      throw new IllegalArgumentException("不支持的:" + path + "节点");
+      throw throwError(path, "", this._jsonNode);
     }
   }
 
@@ -365,7 +389,12 @@ public class JsonHelper {
   }
 
   public enum Option {
-    compareAndSet, set, delete, compareAndDel, missingAndAdd, traversal
+    compareAndSet,
+    set,
+    delete,
+    compareAndDel,
+    missingAndAdd,
+    traversal
   }
 
 }
