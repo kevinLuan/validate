@@ -10,17 +10,16 @@ import java.util.function.Consumer;
 
 public class JsonHelper {
 
-  String json = null;
-  JsonNode _jsonNode;
+  private String json = null;
+  private JsonNode _jsonNode;
   private boolean failover = true;
   private static ObjectMapper mapper = new ObjectMapper();
 
-  public JsonHelper(String json) throws IOException {
-    this.json = json;
-    this._jsonNode = mapper.readTree(json);
+  private JsonHelper(String json) throws IOException {
+    this(mapper.readTree(json));
   }
 
-  public JsonHelper(JsonNode jsonNode) {
+  private JsonHelper(JsonNode jsonNode) {
     Objects.requireNonNull(jsonNode, "`jsonNode`参数不能为空");
     this._jsonNode = jsonNode;
     this.json = jsonNode.toString();
