@@ -33,7 +33,7 @@ public class TestJsonHelper {
       + "                {"
       + "                    'a1':'OK',"
       + "                    'a2':'xx1',"
-      + "                    'abc':'OK','objs':[{'name':'智联招聘'}]"
+      + "                    'abc':'OK','objs':[{'name':'中国'}]"
       + "                }"
       + "            ]"
       + "        }"
@@ -64,7 +64,7 @@ public class TestJsonHelper {
       Assert.assertEquals(3, counter.get());
     }
     {
-      int res = root.compareAndSet("level1.level2.items.objs.name", "智联招聘", "😁");
+      int res = root.compareAndSet("level1.level2.items.objs.name", "中国", "😁");
       Assert.assertEquals(1, res);
       ArrayNode arrayNode = (ArrayNode) root.get("level1.level2.items");
       Assert.assertNull(JsonHelper.of(arrayNode.get(0)).get("objs.name"));

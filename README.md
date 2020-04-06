@@ -49,5 +49,16 @@ Param param= Param buildParam() {
     待补充...
   
 
+##### 2.0.0 json 协议操作工具
+    进入JSON node 指定path(node节点)下进行遍历node节点操作
+    JsonHelper.of("{$json}").cd("product.items").forEach((node)->{
+        ...
+    })
+    JsonNode jsonNode= parseJson("{$json}");
+    比较并设置
+    JsonHelper.of(jsonNode).compareAndSet("level1.level2.items.objs.name", "中国", "😁")
+    比较并删除
+    root.compareAndDelete("level1.level2.items.objs.x", "^v^")
+
 ###### 问题反馈
   email: kevin_Luan@126.com
