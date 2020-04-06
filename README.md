@@ -59,6 +59,19 @@ Param param= Param buildParam() {
     JsonHelper.of(jsonNode).compareAndSet("level1.level2.items.objs.name", "中国", "😁")
     比较并删除
     root.compareAndDelete("level1.level2.items.objs.x", "^v^")
-
+    遍历
+    root.deepTraversal("level1.level2.items", ((node) -> {
+        Assert.assertEquals("hello", node.get("kevin").textValue());
+    })
+    
+    在所有items节点下的Node添加节点: def->🦊
+    root.set("level1.level2.items.def", "🦊")
+    
+    删除叶子节点
+    root.delete("level1.level2.items.a1")
+    
+    叶子节点缺失则添加叶子节点: name->OK
+    root.missingAndSet("level1.level2.items.objs.name", "OK")
+    
 ###### 问题反馈
   email: kevin_Luan@126.com
