@@ -42,7 +42,7 @@ public class ParentReference {
 
 	private static void arrayParam(ParamArray array, Param parent) {
 		array.setParentNode(parent);
-		if (array.existsChildrens()) {
+		if (array.existsChildren()) {
 			Param pm = array.getChildrenAsParam();
 			if (pm.isObject()) {
 				objectParam(pm.asObject(), array);
@@ -58,7 +58,7 @@ public class ParentReference {
 
 	private static void objectParam(ParamObject object, Param parent) {
 		object.setParentNode(parent);
-		if (object.existsChildrens()) {
+		if (object.existsChildren()) {
 			for (Param pm : object.getChildren()) {
 				if (pm.isObject()) {
 					objectParam(pm.asObject(), object);

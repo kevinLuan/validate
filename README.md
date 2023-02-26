@@ -1,4 +1,4 @@
-#### 根据用户自定义参数做合法性验证
+#### 复杂参数验证中间件
 
 #### 项目介绍
   
@@ -7,47 +7,88 @@
 
 ##### 1.0.0 定义请求参数对象结构
 ```Java
-Param param= Param buildParam() {
-  return ParamObject.required("objParam", "对象参数", //
-	  ParamPrimitive.required("name", DataType.String, "姓名").setMax(5), //
-		ParamPrimitive.required("age", DataType.Number, "年龄").setMin(0).setMax(120), //
-		ParamArray.required("items", "商品列表", //
-      ParamObject.required(//
-  			ParamPrimitive.required("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
-  				ParamPrimitive.required("name", DataType.String, "商品名称").setMax(50)//
-        )//
-			), //
-			ParamArray.required("ids", "id列表", //
-		  	ParamPrimitive.required(DataType.Number).setMax(100) //
-			)//
-		);
-	}
+    Param param = ParamObject.optional("userInfo", "用户信息",
+        Primitive.require("name", DataType.String, "姓名").setMin(2).setMax(10),//姓名必填,格式: 2~10字符
+        Primitive.optional("age", DataType.Number, "年龄").between(18, 65)//年龄字段选填，格式: 18岁~65岁
+    );
 ```
 
 ##### 1.0.1 参数合法性验证 
-    根据定义的POJO对象结构做验证，比如：
-    请求参数: objParam  示例：
+客户端请求代码示例：
+```java
+    MockHttpServletRequest request = new MockHttpServletRequest();
+    Map<String, Object> map = new HashMap<>();
+    map.put("name", "张三丰");
+    map.put("age", "60");
+    map.put("sql", "CSRF漏洞");
+    request.addParameter("userInfo", JsonUtils.stringify(map));
+```
+客户端请求数据示例：
 ```json
   {
-  "name":"张三",
-  "age":30,
-  "items":[
-    {
-      "id":1,
-      "name":"xxx"
-    }
-  ],
-  "ids":[
-  1,2,3
-  ]
+    "name":"张三",
+    "age":30
+    //    ...
   }
 ```
-    待补充...
+##### 1.0.2 服务端数据验证
+代码示例：
+```java
+Param param = ParamObject.require("userInfo", "用户信息",
+    Primitive.require("name", DataType.String, "姓名").setMin(2).setMax(32),
+    Primitive.optional("age", DataType.Number, null).between(3, 18)
+);
+try {
+    Validation validation = Validation.request(param);
+    //验证请求参数
+    validation.checkRequest(request);
+    //根据验证参数要求格式，提取数据
+    Map<String, Object> extractData = validation.extractRequest(request);
+} catch (IllegalArgumentException e) {
+    Assert.assertEquals("`paramInfo.age`限制范围3(含)~18(含)", e.getMessage());
+}
+```
+##### 1.0.3 验证完成并提取合法性数据
+代码示例：
+```java
+Param param = ParamObject.require("userInfo", "用户信息",
+    Primitive.require("name", DataType.String, "姓名").setMin(2).setMax(32),
+    Primitive.optional("age", DataType.Number, null).between(3, 18)
+);
+Map<String, Object> extractData = Validation.request(param).checkRequest(request).extractRequest(request);
+```
+#### 代码生成
 
-##### 1.0.2 提取合法性数据
-
-    待补充...
-  
+##### 根据任意 JSON 数据自动生成 Param 定义
+```json
+  {"name":"张三丰","ids":[100],"items":[{"name":"手机","id":2}],"age":100.11}
+```
+生成代码工具API 
+```java
+   String javaCode= ParamUtils.generateCode(json);
+   System.out.println("生成Param代码:"+ javaCode);
+   //根据 JSON  数据生成运行时Param对象
+   Param param = ParamUtils.fromJsonToParam(json);
+   //根据 Param 生成数据示例格式
+   String dataExample = ParamUtils.toJsonDataExample(param);
+```
+生成代码如下：
+```java
+ParamObject.optional(//
+                Primitive.optional("name", DataType.String, null).setExampleValue("张三丰"),//
+                ParamArray.optional("ids", null,//
+                        Primitive.optional(DataType.Number)),//
+                ParamArray.optional("items", null,//
+                        ParamObject.optional(//
+                                Primitive.optional("name", DataType.String, null).setExampleValue("手机"),//
+                                Primitive.optional("id", DataType.Number, null).setExampleValue(2)//
+                        )//
+                ),//
+                Primitive.optional("age", DataType.Number, null).setExampleValue(100.11)//
+        );
+```
+##### 根据 Param 定义自动生成原生 JSON 数据，可以用来作为请求示例使用
+##### Param 可以支持序列化和反序列能力，用来满足动态配置验证规则场景
 
 ###### 问题反馈
   email: kevin_Luan@126.com

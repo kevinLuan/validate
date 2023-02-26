@@ -12,12 +12,12 @@ import org.springframework.util.MultiValueMap;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.open.param.Param;
 
-public class ApiHelper {
+public class Validation {
 	private ApiCheck<HttpServletRequest> requestCheck;
 	private ApiCheck<JsonNode> responseCheck;
 
-	public static ApiHelper make(Param[] request, Param response) {
-		ApiHelper helper = new ApiHelper();
+	public static Validation make(Param[] request, Param response) {
+		Validation helper = new Validation();
 		helper.responseCheck = ApiResponse.make(response);
 		helper.requestCheck = ApiParams.make(request);
 		return helper;
@@ -28,7 +28,7 @@ public class ApiHelper {
 	 * 
 	 * @param filter
 	 */
-	public ApiHelper setUnknownNodeFilter(UnknownNodeFilter filter) {
+	public Validation setUnknownNodeFilter(UnknownNodeFilter filter) {
 		if (this.requestCheck != null) {
 			this.requestCheck.setUnknownNodeFilter(filter);
 		}
@@ -38,19 +38,19 @@ public class ApiHelper {
 		return this;
 	}
 
-	public static ApiHelper request(Param... params) {
-		ApiHelper helper = new ApiHelper();
+	public static Validation request(Param... params) {
+		Validation helper = new Validation();
 		helper.requestCheck = ApiParams.make(params);
 		return helper;
 	}
 
-	public static ApiHelper response(Param response) {
-		ApiHelper helper = new ApiHelper();
+	public static Validation response(Param response) {
+		Validation helper = new Validation();
 		helper.responseCheck = ApiResponse.make(response);
 		return helper;
 	}
 
-	public ApiHelper checkRequest(HttpServletRequest request) {
+	public Validation checkRequest(HttpServletRequest request) {
 		requestCheck.check(request);
 		return this;
 	}
@@ -65,12 +65,12 @@ public class ApiHelper {
 		return requestCheck.extract(request);
 	}
 
-	public ApiHelper checkResponse(JsonNode jsonNode) {
+	public Validation checkResponse(JsonNode jsonNode) {
 		responseCheck.check(jsonNode);
 		return this;
 	}
 
-	public ApiHelper checkResponse(DataResult<?> dataResult) {
+	public Validation checkResponse(DataResult<?> dataResult) {
 		JsonNode jsonNode = JsonUtils.parser(dataResult.toJSON());
 		responseCheck.check(jsonNode);
 		return this;

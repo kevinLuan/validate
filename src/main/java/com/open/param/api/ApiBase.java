@@ -35,7 +35,7 @@ abstract class ApiBase<P> implements ApiCheck<P> {
 		}
 		ObjectNode objectNode = (ObjectNode) node;
 		ParamObject paramObject = param.asObject();
-		if (!paramObject.existsChildrens()) {
+		if (!paramObject.existsChildren()) {
 			return;// 没有配置子节点的话，当前节点下的任意子节点均保留
 		}
 		Param childrens[] = paramObject.getChildren();
@@ -94,7 +94,7 @@ abstract class ApiBase<P> implements ApiCheck<P> {
 		}
 		ParamArray array = (ParamArray) param;
 		ArrayNode arrayNode = (ArrayNode) jsonNode;
-		if (!array.existsChildrens()) {
+		if (!array.existsChildren()) {
 			return;
 		}
 		Param children = array.getChildrenAsParam();

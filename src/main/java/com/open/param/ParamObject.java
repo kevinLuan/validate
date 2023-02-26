@@ -11,12 +11,12 @@ public class ParamObject extends ParamBase {
 		super();
 	}
 
-	public ParamObject(String name, boolean required, String description, Param[] childrens) {
-		super(name, required, DataType.Object, description);
-		if (childrens != null) {
-			this.children = new ParamBase[childrens.length];
-			for (int i = 0; i < childrens.length; i++) {
-				Param param = childrens[i];
+	public ParamObject(String name, boolean require, String description, Param[] children) {
+		super(name, require, DataType.Object, description);
+		if (children != null) {
+			this.children = new ParamBase[children.length];
+			for (int i = 0; i < children.length; i++) {
+				Param param = children[i];
 				this.children[i] = (ParamBase) param;
 				if (param.isObjectValue()) {
 					throw new IllegalArgumentException("ParamObject子节点Name不能为空");
@@ -25,20 +25,20 @@ public class ParamObject extends ParamBase {
 		}
 	}
 
-	public static ParamObject required(String name, String description, Param... childrens) {
-		return new ParamObject(name, true, description, childrens);
+	public static ParamObject require(String name, String description, Param... children) {
+		return new ParamObject(name, true, description, children);
 	}
 
-	public static ParamObject required(Param... childrens) {
-		return new ParamObject("", true, null, childrens);
+	public static ParamObject require(Param... children) {
+		return new ParamObject("", true, null, children);
 	}
 
-	public static ParamObject noRequired(Param... childrens) {
-		return new ParamObject("", false, null, childrens);
+	public static ParamObject optional(Param... children) {
+		return new ParamObject("", false, null, children);
 	}
 
-	public static ParamObject noRequired(String name, String description, Param... childrens) {
-		return new ParamObject(name, false, description, childrens);
+	public static ParamObject optional(String name, String description, Param... children) {
+		return new ParamObject(name, false, description, children);
 	}
 
 	public boolean isObject() {
@@ -50,7 +50,7 @@ public class ParamObject extends ParamBase {
 		return this;
 	}
 
-	public final boolean existsChildrens() {
+	public final boolean existsChildren() {
 		return this.children != null && children.length > 0;
 	}
 

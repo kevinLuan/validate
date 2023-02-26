@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.open.datatype.Numberx;
+import com.open.datatype.NumberParser;
 import com.open.param.DataType;
 import com.open.param.Param;
 import com.open.param.ParamArray;
@@ -35,7 +35,7 @@ class CheckParam {
 		if (param == null) {
 			throw new IllegalArgumentException("param must be not null");
 		}
-		if (param.isRequired()) {
+		if (param.isRequire()) {
 			if (JsonUtils.isNull(jsonNode)) {
 				throw new IllegalArgumentException(getTipMissing(param.getPath()));
 			}
@@ -62,7 +62,7 @@ class CheckParam {
 		for (Param param : params) {
 			String name = param.getName();
 			String value = request.getParameter(name);
-			if (param.isRequired()) {
+			if (param.isRequire()) {
 				if (value == null) {
 					throw new IllegalArgumentException(getTipMissing(param.getPath()));
 				}
@@ -94,11 +94,11 @@ class CheckParam {
 	void check_array(Param param, JsonNode value) {
 		if (param.isArray() && value.isArray()) {
 			ParamArray array = param.asArray();
-			if (!array.existsChildrens()) {
+			if (!array.existsChildren()) {
 				return;// 没有子节点
 			}
 			Param children = array.getChildrenAsParam();
-			if (array.isRequired()) {
+			if (array.isRequire()) {
 				if (value.size() == 0) {
 					throw new IllegalArgumentException(param.getPath() + "[]不能为空");
 				}
@@ -126,7 +126,7 @@ class CheckParam {
 			String value = JsonUtils.toString(node);
 			if (param.getDataType().isNumber()) {
 				try {
-					Numberx.parser(value, param.isRequired()).check(param.asPrimitive());
+					NumberParser.parse(value, param.isRequire()).check(param.asPrimitive());
 				} catch (NumberFormatException e) {
 					if (param.getParentNode() != null) {
 						if (param.getParentNode().isArray()) {
@@ -162,7 +162,7 @@ class CheckParam {
 		ObjectNode objNode = (ObjectNode) jsonNode;
 		for (Param p : obj.getChildren()) {
 			JsonNode value = objNode.get(p.getName());
-			if (p.isRequired()) {
+			if (p.isRequire()) {
 				if (JsonUtils.isNull(value)) {
 					throw new IllegalArgumentException(getTipMissing(p.getPath()));
 				}

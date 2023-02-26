@@ -3,7 +3,7 @@ package com.open.param.test;
 import com.open.json.api.JsonUtils;
 import com.open.param.Param;
 import com.open.param.ParamArray;
-import com.open.param.api.ApiHelper;
+import com.open.param.api.Validation;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,35 +19,35 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.open.param.DataType;
 import com.open.param.ParamObject;
-import com.open.param.ParamPrimitive;
+import com.open.param.Primitive;
 
 public class ApiHelperTest {
 	private static ParamObject getResultParam() {
-		return ParamObject.required(//
-				ParamObject.required("status", "返回", //
-						ParamPrimitive.required("status_code", DataType.Number, ""), //
-						ParamPrimitive.required("status_reasion", DataType.String, "")//
+		return ParamObject.require(//
+				ParamObject.require("status", "返回", //
+						Primitive.require("status_code", DataType.Number, ""), //
+						Primitive.require("status_reasion", DataType.String, "")//
 				), //
 				buildResult()//
 		);
 	}
 
 	private static Param buildResult() {
-		return ParamObject.noRequired("result", "返回数据", //
-				ParamPrimitive.required("name", DataType.String, "姓名").setMax(5), //
-				ParamPrimitive.required("age", DataType.Number, "年龄").setMin(0).setMax(120), //
-				ParamArray.required("items", "商品列表", //
-						ParamObject.required(//
-								ParamPrimitive.required("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
-								ParamPrimitive.required("name", DataType.String, "商品名称").setMax(50)//
+		return ParamObject.optional("result", "返回数据", //
+				Primitive.require("name", DataType.String, "姓名").setMax(5), //
+				Primitive.require("age", DataType.Number, "年龄").setMin(0).setMax(120), //
+				ParamArray.require("items", "商品列表", //
+						ParamObject.require(//
+								Primitive.require("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
+								Primitive.require("name", DataType.String, "商品名称").setMax(50)//
 						)//
 				), //
-				ParamArray.required("ids", "id列表", //
-						ParamPrimitive.required(DataType.Number).setMax(100) //
+				ParamArray.require("ids", "id列表", //
+						Primitive.require(DataType.Number).setMax(100) //
 				), //
-				ParamObject.noRequired("extendMap", "扩展字段"), //
-				ParamArray.noRequired("array_any", "任意数组节点"), //
-				ParamArray.noRequired("array_any_simple", "任意数组节点"));
+				ParamObject.optional("extendMap", "扩展字段"), //
+				ParamArray.optional("array_any", "任意数组节点"), //
+				ParamArray.optional("array_any_simple", "任意数组节点"));
 	}
 
 	private static Object getResult() {
@@ -95,7 +95,7 @@ public class ApiHelperTest {
 		String json = getResponseData();
 		System.out.println(json);
 		JsonNode jsonNode = JsonUtils.parser(json);
-		Map<String, Object> map = ApiHelper.response(getResultParam()).checkResponse(jsonNode).extractResponse(jsonNode);
+		Map<String, Object> map = Validation.response(getResultParam()).checkResponse(jsonNode).extractResponse(jsonNode);
 		System.out.println(JsonUtils.stringify(map));
 		String expected = "{'result':{'array_any':[{'a':10,'obj':{}}],'array_any_simple':[1,2,3,4,5],'extendMap':{'a':10,'obj':{}},'name':'张三丰','ids':['100'],'items':[{'name':'手机','id':'2'}],'age':'100.11'},'status':{'status_code':100,'status_reasion':'参数错误'}}";
 		expected = expected.replace("'", "\"");
@@ -103,20 +103,20 @@ public class ApiHelperTest {
 	}
 
 	private Param buildParam() {
-		return ParamObject.required("objParam", "对象参数", //
-				ParamPrimitive.required("name", DataType.String, "姓名").setMax(5), //
-				ParamPrimitive.required("age", DataType.Number, "年龄").setMin(0).setMax(120), //
-				ParamArray.required("items", "商品列表", //
-						ParamObject.required(//
-								ParamPrimitive.required("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
-								ParamPrimitive.required("name", DataType.String, "商品名称").setMax(50)//
+		return ParamObject.require("objParam", "对象参数", //
+				Primitive.require("name", DataType.String, "姓名").setMax(5), //
+				Primitive.require("age", DataType.Number, "年龄").setMin(0).setMax(120), //
+				ParamArray.require("items", "商品列表", //
+						ParamObject.require(//
+								Primitive.require("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
+								Primitive.require("name", DataType.String, "商品名称").setMax(50)//
 						)//
 				), //
-				ParamArray.required("ids", "id列表", //
-						ParamPrimitive.required(DataType.Number).setMax(100) //
+				ParamArray.require("ids", "id列表", //
+						Primitive.require(DataType.Number).setMax(100) //
 				), //
-				ParamObject.noRequired("extendMap", "扩展Map(任意子节点)"), ParamArray.noRequired("array_any", "任意数组类型"),
-				ParamArray.noRequired("array_any_simple", "任意数组类型"));
+				ParamObject.optional("extendMap", "扩展Map(任意子节点)"), ParamArray.optional("array_any", "任意数组类型"),
+				ParamArray.optional("array_any_simple", "任意数组类型"));
 	}
 
 	private HttpServletRequest buildHttpRequest() {
@@ -148,7 +148,7 @@ public class ApiHelperTest {
 
 	@Test
 	public void test_param() {
-		Map<String, Object> map = ApiHelper.request(buildParam()).checkRequest(buildHttpRequest()).extractRequest(buildHttpRequest());
+		Map<String, Object> map = Validation.request(buildParam()).checkRequest(buildHttpRequest()).extractRequest(buildHttpRequest());
 		System.out.println("提取数据：" + JsonUtils.stringify(map));
 		String expected = "{'objParam':{'array_any':[{'a':10,'obj':{}}],'array_any_simple':[1,2,3,4,5],'extendMap':{'a':10,'obj':{}},'name':'张三丰','ids':['100'],'items':[{'name':'手机','id':'2'}],'age':'100.11'}}";
 		String actual = JsonUtils.stringify(map);

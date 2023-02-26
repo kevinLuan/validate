@@ -12,8 +12,8 @@ public class ParamArray extends ParamBase {
 	public ParamArray() {
 	}
 
-	public ParamArray(String name, boolean required, String description, ParamBase childrens) {
-		super(name, required, DataType.Array, description);
+	public ParamArray(String name, boolean require, String description, ParamBase childrens) {
+		super(name, require, DataType.Array, description);
 		check(childrens);
 		if (childrens != null) {
 			this.children = new ParamBase[] { childrens };
@@ -38,7 +38,7 @@ public class ParamArray extends ParamBase {
 	 * @param name
 	 * @return
 	 */
-	public static ParamArray required(String name, String description, ParamBase childrens) {
+	public static ParamArray require(String name, String description, ParamBase childrens) {
 		return new ParamArray(name, true, description, childrens);
 	}
 
@@ -49,11 +49,11 @@ public class ParamArray extends ParamBase {
 	 * @param description
 	 * @return
 	 */
-	public static ParamArray required(String name, String description) {
+	public static ParamArray require(String name, String description) {
 		return new ParamArray(name, true, description, null);
 	}
 
-	public static ParamArray noRequired(String name, String description, ParamBase childrens) {
+	public static ParamArray optional(String name, String description, ParamBase childrens) {
 		return new ParamArray(name, false, description, childrens);
 	}
 
@@ -64,7 +64,7 @@ public class ParamArray extends ParamBase {
 	 * @param description
 	 * @return
 	 */
-	public static ParamArray noRequired(String name, String description) {
+	public static ParamArray optional(String name, String description) {
 		return new ParamArray(name, false, description, null);
 	}
 
@@ -84,7 +84,7 @@ public class ParamArray extends ParamBase {
 		return null;
 	}
 
-	public final boolean existsChildrens() {
+	public final boolean existsChildren() {
 		return this.children != null && children.length > 0;
 	}
 }
