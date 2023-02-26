@@ -57,6 +57,38 @@ Param param = ParamObject.require("userInfo", "用户信息",
 );
 Map<String, Object> extractData = Validation.request(param).checkRequest(request).extractRequest(request);
 ```
+#### 代码生成
+
+##### 根据任意 JSON 数据自动生成 Param 定义
+```json
+  {"name":"张三丰","ids":[100],"items":[{"name":"手机","id":2}],"age":100.11}
+```
+生成代码工具API 
+```java
+   String javaCode= ParamUtils.generateCode(json);
+   System.out.println("生成Param代码:"+ javaCode);
+   //根据 JSON  数据生成运行时Param对象
+   Param param = ParamUtils.fromJsonToParam(json);
+   //根据 Param 生成数据示例格式
+   String dataExample = ParamUtils.toJsonDataExample(param);
+```
+生成代码如下：
+```java
+ParamObject.optional(//
+                Primitive.optional("name", DataType.String, null).setExampleValue("张三丰"),//
+                ParamArray.optional("ids", null,//
+                        Primitive.optional(DataType.Number)),//
+                ParamArray.optional("items", null,//
+                        ParamObject.optional(//
+                                Primitive.optional("name", DataType.String, null).setExampleValue("手机"),//
+                                Primitive.optional("id", DataType.Number, null).setExampleValue(2)//
+                        )//
+                ),//
+                Primitive.optional("age", DataType.Number, null).setExampleValue(100.11)//
+        );
+```
+##### 根据 Param 定义自动生成原生 JSON 数据，可以用来作为请求示例使用
+##### Param 可以支持序列化和反序列能力，用来满足动态配置验证规则场景
 
 ###### 问题反馈
   email: kevin_Luan@126.com
