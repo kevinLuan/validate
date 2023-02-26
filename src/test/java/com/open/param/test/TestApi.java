@@ -6,41 +6,71 @@ import com.open.param.Param;
 import com.open.param.ParamArray;
 import com.open.param.ParamBase;
 import com.open.param.ParamObject;
-import com.open.param.ParamPrimitive;
+import com.open.param.Primitive;
 import com.open.param.ParamUtils;
 import com.open.json.api.GsonSerialize;
+import com.open.utils.TestHelper;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.io.IOException;
 
 public class TestApi {
-	public static void main(String[] args) {
-		JsonToParamUtils.DESCRIPTION = "参数描述";
-		Param product = ParamObject.required("product", "商品对象", //
-				ParamPrimitive.required("name", DataType.String, "商品名称").setExampleValue("IPhone7"),
-				ParamPrimitive.required("price", DataType.Number, "商品价格").setExampleValue(99.98),
-				ParamArray.required("skus", "商品SKU属性列表", //
-						ParamObject.required(//
-								ParamPrimitive.required("id", DataType.Number, "参数描述").setExampleValue(100), //
-								ParamPrimitive.required("name", DataType.String, "参数描述").setExampleValue("移动版"), //
-								ParamArray.required("code", "参数描述", //
-										ParamObject.noRequired(//
-												ParamPrimitive.noRequired("id", DataType.Number, "id").setExampleValue(12345), //
-												ParamPrimitive.noRequired("title", DataType.String, "标题").setExampleValue("土黄金色")//
-										)//
-								)//
-						)//
-				)//
-		);
-		String string= GsonSerialize.INSTANCE.encode(product);
-		System.out.println(string);
-		Param param1= GsonSerialize.INSTANCE.decode(string, ParamBase.class);
-		string=GsonSerialize.INSTANCE.encode(param1);
-		System.out.println(string);
-		System.out.println(ParamUtils.fromParamAsJsonData(product));
-		String json = "{\"name\":\"IPhone\",\"price\":5800.00,\"skus\":[{\"id\":123,\"name\":\"移动版\",\"code\":[{\"title\":\"土黄金\",\"id\":1000},{\"title\":\"黑色\",\"id\":1001}]}]}";
-		Param param = ParamUtils.fromJsonAsParam(json);
-		System.out.println(ParamUtils.fromParamAsJavaCode(param));
-		System.out.println(ParamUtils.fromParamAsJsonData(param));
+    private static Param product = ParamObject.require("product", "商品对象", //
+            Primitive.require("name", DataType.String, "商品名称").setExampleValue("IPhone7"),
+            Primitive.require("price", DataType.Number, "商品价格").setExampleValue(99.98),
+            ParamArray.require("skus", "商品SKU属性列表", //
+                    ParamObject.require(//
+                            Primitive.require("id", DataType.Number, "参数描述").setExampleValue(100), //
+                            Primitive.require("name", DataType.String, "参数描述").setExampleValue("移动版"), //
+                            ParamArray.require("code", "参数描述", //
+                                    ParamObject.optional(//
+                                            Primitive.optional("id", DataType.Number, "id").setExampleValue(12345), //
+                                            Primitive.optional("title", DataType.String, "标题").setExampleValue("土黄金色")//
+                                    )//
+                            )//
+                    )//
+            )//
+    );
 
-		
+    @Test
+    public void test() {
+        String json = ParamUtils.toJsonDataExample(product);
+        String expected = "{\"name\":\"IPhone7\",\"price\":99.98,\"skus\":[{\"id\":100,\"name\":\"移动版\",\"code\":[{\"id\":12345,\"title\":\"土黄金色\"}]}]}";
+        Assert.assertEquals(expected, json);
+        String javaCode = ParamUtils.generateCode(json);
+        System.out.println("根据json数据生成验证参数代码:" + javaCode);
+        Param param = ParamUtils.fromJsonToParam(json);
+        Param generateParam = ParamObject.optional(//
+                Primitive.optional("name", DataType.String, "参数描述").setExampleValue("IPhone7"),//
+                Primitive.optional("price", DataType.Number, "参数描述").setExampleValue(99.98),//
+                ParamArray.optional("skus", "参数描述",//
+                        ParamObject.optional(//
+                                Primitive.optional("id", DataType.Number, "参数描述").setExampleValue(100),//
+                                Primitive.optional("name", DataType.String, "参数描述").setExampleValue("移动版"),//
+                                ParamArray.optional("code", "参数描述",//
+                                        ParamObject.optional(//
+                                                Primitive.optional("id", DataType.Number, "参数描述").setExampleValue(12345),//
+                                                Primitive.optional("title", DataType.String, "参数描述").setExampleValue("土黄金色")//
+                                        )//
+                                )//
+                        )//
+                )//
+        );
+        Assert.assertEquals(ParamUtils.generateCode(param), ParamUtils.generateCode(generateParam));
+    }
 
-	}
+    @Test
+    public void serializationTest() throws IOException {
+        JsonToParamUtils.DESCRIPTION = "参数描述";
+        String paramDefine = ParamUtils.serialization(product);
+        String fileData = TestHelper.readFile("product_param_define.json");
+        Assert.assertEquals(ParamUtils.serialization(ParamUtils.deserialization(fileData)), paramDefine);
+        Param param = ParamUtils.deserialization(paramDefine);
+        System.out.println("生成数据示例:" + ParamUtils.toJsonDataExample(param));
+        String json = "{\"name\":\"IPhone7\",\"price\":99.98,\"skus\":[{\"id\":100,\"name\":\"移动版\",\"code\":[{\"id\":12345,\"title\":\"土黄金色\"}]}]}";
+        Assert.assertEquals(json, ParamUtils.toJsonDataExample(ParamUtils.fromJsonToParam(json)));
+
+
+    }
 }

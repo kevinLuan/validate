@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ParamBase implements Param {
 	private String name;
-	private boolean required;
+	private boolean require;
 	private DataType dataType;
 	private String description;
 	// 父亲节点
@@ -15,28 +15,28 @@ public class ParamBase implements Param {
 
 	// 子节点(ParamArray,ParamObject)
 	ParamBase[] children = new ParamBase[0];
-	// 限制最小输入值(ParamPrimitive)
+	// 限制最小输入值(Primitive)
 	Number min;
-	// 限制最大输入值(ParamPrimitive)
+	// 限制最大输入值(Primitive)
 	Number max;
 	/**
-	 * 示例值(只有ParamPrimitive类型节点才会有效)
+	 * 示例值(只有Primitive类型节点才会有效)
 	 */
 	String exampleValue;
 
 	public ParamBase() {
 	}
 
-	public ParamBase(String name, boolean required, DataType dataType, String description) {
+	public ParamBase(String name, boolean require, DataType dataType, String description) {
 		this.name = name;
-		this.required = required;
+		this.require = require;
 		this.dataType = dataType;
 		this.description = description;
 	}
 
-	public ParamBase(String name, boolean required, DataType dataType) {
+	public ParamBase(String name, boolean require, DataType dataType) {
 		this.name = name;
-		this.required = required;
+		this.require = require;
 		this.dataType = dataType;
 	}
 
@@ -44,8 +44,8 @@ public class ParamBase implements Param {
 		return name;
 	}
 
-	public boolean isRequired() {
-		return required;
+	public boolean isRequire() {
+		return require;
 	}
 
 	public DataType getDataType() {
@@ -60,8 +60,8 @@ public class ParamBase implements Param {
 		this.name = name;
 	}
 
-	public void setRequired(boolean required) {
-		this.required = required;
+	public void setRequire(boolean require) {
+		this.require = require;
 	}
 
 	public void setDataType(DataType dataType) {
@@ -110,7 +110,6 @@ public class ParamBase implements Param {
 
 	@Override
 	public boolean isObjectValue() {
-//		if (isObject() && getName().length() == 0) {
 		if (isObject() && StringUtils.isBlank(getName())) {
 			return true;
 		} else {
@@ -125,7 +124,7 @@ public class ParamBase implements Param {
 			if (children != null && children.length > 0) {
 				param = children[0];
 			}
-			return new ParamArray(name, required, description, param);
+			return new ParamArray(name, require, description, param);
 		}
 		throw ErrorUtils.newClassCastException(this.getClass(), ParamArray.class);
 	}
@@ -133,17 +132,17 @@ public class ParamBase implements Param {
 	@Override
 	public ParamObject asObject() {
 		if (isObject()) {
-			return new ParamObject(name, required, description, children);
+			return new ParamObject(name, require, description, children);
 		}
 		throw ErrorUtils.newClassCastException(this.getClass(), ParamObject.class);
 	}
 
 	@Override
-	public ParamPrimitive asPrimitive() {
+	public Primitive asPrimitive() {
 		if (isPrimitive()) {
-			return new ParamPrimitive(name, required, dataType, description, min, max).setExampleValue(exampleValue);
+			return new Primitive(name, require, dataType, description, min, max).setExampleValue(exampleValue);
 		}
-		throw ErrorUtils.newClassCastException(this.getClass(), ParamPrimitive.class);
+		throw ErrorUtils.newClassCastException(this.getClass(), Primitive.class);
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * @author KEVIN LUAN
  */
 public interface Param {
-	Logger LOGGER = LoggerFactory.getLogger(Param.class);
+	Logger LOG = LoggerFactory.getLogger(Param.class);
 
 	/**
 	 * 获取参数名称
@@ -30,7 +30,7 @@ public interface Param {
 	 * 
 	 * @return
 	 */
-	ParamPrimitive asPrimitive();
+	Primitive asPrimitive();
 
 	/**
 	 * 验证是否是{@link ParamArray}类型实现
@@ -100,7 +100,7 @@ public interface Param {
 	 * 
 	 * @return
 	 */
-	boolean isRequired();
+	boolean isRequire();
 
 	String getPath();
 }

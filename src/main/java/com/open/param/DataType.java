@@ -8,8 +8,8 @@ public enum DataType {
 		}
 
 		@Override
-		public void check(ParamPrimitive primitive, String value) {
-			if (primitive.isRequired()) {
+		public void check(Primitive primitive, String value) {
+			if (primitive.isRequire()) {
 				if (value == null) {
 					throw new IllegalArgumentException(primitive.getName() + "参数不能为空");
 				}
@@ -57,7 +57,7 @@ public enum DataType {
 		return false;
 	}
 
-	public void check(ParamPrimitive p, String value) {
+	public void check(Primitive p, String value) {
 		// TODO 子类实现
 	}
 
