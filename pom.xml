@@ -99,7 +99,7 @@
   <build>
     <finalName>${project.artifactId}</finalName>
     <plugins>
-      <!-- deploy 时代码doc 和 source -->
+      <!-- Publish documentation and source code -->
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
         <version>2.2</version>
@@ -139,12 +139,12 @@
   </build>
   <distributionManagement>
     <snapshotRepository>
-      <id>maven-public</id> <!-- 此处id与setting.xml中的服务id保持一致 -->
+      <id>maven-public</id>
       <name>oss Snapshots Repository</name>
       <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
     </snapshotRepository>
     <repository>
-      <id>maven-public</id> <!-- 此处id与setting.xml中的服务id保持一致 -->
+      <id>maven-public</id>
       <name>oss Staging Repository</name>
       <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
