@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.open</groupId>
+  <groupId>io.github.kevinLuan</groupId>
   <artifactId>validate</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <name>validate</name>
@@ -15,6 +15,22 @@
     <log4j.version>2.0.1</log4j.version>
   </properties>
   <description>根据预定义参数格式进行合法性验证及数据提取工具</description>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <!-- Developer account -->
+  <developers>
+    <developer>
+      <name>kevin.luan</name>
+      <email>kevin_luan@126.com</email>
+      <organization>kevin.luan</organization>
+    </developer>
+  </developers>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -121,30 +137,16 @@
       </plugin>
     </plugins>
   </build>
-  <!--
   <distributionManagement>
     <snapshotRepository>
-      <id>snapshots</id>
-      <name>Nexus Snapshots Repository</name>
-      <url>http://localhost:8080/nexus/content/repositories/snapshots/</url>
+      <id>maven-public</id> <!-- 此处id与setting.xml中的服务id保持一致 -->
+      <name>oss Snapshots Repository</name>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
     </snapshotRepository>
     <repository>
-      <id>releases</id>
-      <name>Nexus Release Repository</name>
-      <url>
-        http://localhost:8080/nexus/content/repositories/releases/
-      </url>
-    </repository>
-  </distributionManagement>
-  -->
-  <distributionManagement>
-    <snapshotRepository>
-      <id>sonatype-nexus-snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <repository>
-      <id>sonatype-nexus-releases</id>
-      <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+      <id>maven-public</id> <!-- 此处id与setting.xml中的服务id保持一致 -->
+      <name>oss Staging Repository</name>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>
 </project>
