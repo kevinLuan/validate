@@ -14,14 +14,14 @@ import org.junit.Test;
 import java.io.IOException;
 
 public class TestApi {
-    private static Param product = ParamObject.require("product", "商品对象", //
-            Primitive.require("name", DataType.String, "商品名称").setExampleValue("IPhone7"),
-            Primitive.require("price", DataType.Number, "商品价格").setExampleValue(99.98),
-            ParamArray.require("skus", "商品SKU属性列表", //
-                    ParamObject.require(//
-                            Primitive.require("id", DataType.Number, "参数描述").setExampleValue(100), //
-                            Primitive.require("name", DataType.String, "参数描述").setExampleValue("移动版"), //
-                            ParamArray.require("code", "参数描述", //
+    private static Param product = ParamObject.required("product", "商品对象", //
+            Primitive.required("name", DataType.String, "商品名称").setExampleValue("IPhone7"),
+            Primitive.required("price", DataType.Number, "商品价格").setExampleValue(99.98),
+            ParamArray.required("skus", "商品SKU属性列表", //
+                    ParamObject.required(//
+                            Primitive.required("id", DataType.Number, "参数描述").setExampleValue(100), //
+                            Primitive.required("name", DataType.String, "参数描述").setExampleValue("移动版"), //
+                            ParamArray.required("code", "参数描述", //
                                     ParamObject.optional(//
                                             Primitive.optional("id", DataType.Number, "id").setExampleValue(12345), //
                                             Primitive.optional("title", DataType.String, "标题").setExampleValue("土黄金色")//

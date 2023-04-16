@@ -31,9 +31,9 @@ public class ParamToCodeUtils {
         if (children.isObject()) {
             StringBuilder stringBuilder = new StringBuilder();
             parserObject(children.asObject(), stringBuilder);
-            if (array.isRequire()) {
+            if (array.isRequired()) {
 
-                builder.append("ParamArray.require(" + formatParam(name) + "," + formatParam(description) + ",");
+                builder.append("ParamArray.required(" + formatParam(name) + "," + formatParam(description) + ",");
             } else {
                 builder.append("ParamArray.optional(" + formatParam(name) + "," + formatParam(description) + ",");
             }
@@ -43,8 +43,8 @@ public class ParamToCodeUtils {
             // 子节点
             String childrenCode;
             {
-                if (children.isRequire()) {
-                    childrenCode = "Primitive.require(" + getType(children.getDataType()) + ")";
+                if (children.isRequired()) {
+                    childrenCode = "Primitive.required(" + getType(children.getDataType()) + ")";
                 } else {
                     childrenCode = "Primitive.optional(" + getType(children.getDataType()) + ")";
                 }
@@ -53,8 +53,8 @@ public class ParamToCodeUtils {
             // 子节点的父级节点
             String arrayNode;
             {
-                if (array.isRequire()) {
-                    arrayNode = "ParamArray.require(" + formatParam(name) + "," + formatParam(description) + ",";
+                if (array.isRequired()) {
+                    arrayNode = "ParamArray.required(" + formatParam(name) + "," + formatParam(description) + ",";
                 } else {
                     arrayNode = "ParamArray.optional(" + formatParam(name) + "," + formatParam(description) + ",";
                 }
@@ -98,8 +98,8 @@ public class ParamToCodeUtils {
             }
         }
         if (name != null && name.length() > 0) {
-            if (object.isRequire()) {
-                builder.append("ParamObject.require(" + formatParam(name) + "," + formatParam(description) + ","
+            if (object.isRequired()) {
+                builder.append("ParamObject.required(" + formatParam(name) + "," + formatParam(description) + ","
                         + remoteLastComma(newLine(nodeBuilder)) + NEW_LINE + ")");
             } else {
                 builder.append("ParamObject.optional(" + formatParam(name) + "," + formatParam(description) + ","
@@ -107,8 +107,8 @@ public class ParamToCodeUtils {
             }
 
         } else {
-            if (object.isRequire()) {
-                builder.append("ParamObject.require(" + remoteLastComma(newLine(nodeBuilder)) + NEW_LINE + ")");
+            if (object.isRequired()) {
+                builder.append("ParamObject.required(" + remoteLastComma(newLine(nodeBuilder)) + NEW_LINE + ")");
             } else {
                 builder.append("ParamObject.optional(" + remoteLastComma(newLine(nodeBuilder)) + NEW_LINE + ")");
             }
@@ -138,14 +138,14 @@ public class ParamToCodeUtils {
         DataType type = primitive.getDataType();
         String description = primitive.getDescription();
         if (name.length() > 0) {
-            if (primitive.isRequire()) {
-                builder.append(String.format("Primitive.require(%s,%s,%s)", formatParam(name), getType(type), formatParam(description)));
+            if (primitive.isRequired()) {
+                builder.append(String.format("Primitive.required(%s,%s,%s)", formatParam(name), getType(type), formatParam(description)));
             } else {
                 builder.append(String.format("Primitive.optional(%s,%s,%s)", formatParam(name), getType(type), formatParam(description)));
             }
         } else {
-            if (primitive.isRequire()) {
-                builder.append("Primitive.require(" + getType(type) + ")");
+            if (primitive.isRequired()) {
+                builder.append("Primitive.required(" + getType(type) + ")");
             } else {
                 builder.append("Primitive.optional(" + getType(type) + ")");
             }

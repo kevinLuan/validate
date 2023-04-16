@@ -26,7 +26,7 @@ public class Primitive extends ParamBase {
      * @param name
      * @return
      */
-    public static Primitive require(String name, DataType dataType, String description) {
+    public static Primitive required(String name, DataType dataType, String description) {
         return Primitive.mark(name, true, dataType, description, null, null);
     }
 
@@ -38,7 +38,7 @@ public class Primitive extends ParamBase {
      * @param dataType
      * @return
      */
-    public static Primitive require(DataType dataType) {
+    public static Primitive required(DataType dataType) {
         return Primitive.mark("", true, dataType, null, null, null);
     }
 

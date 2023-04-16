@@ -27,10 +27,10 @@ public class TestResponse {
 	}
 
 	private static ParamObject getResultParam() {
-		return ParamObject.require(//
-				ParamObject.require("status", "返回", //
-						Primitive.require("status_code", DataType.Number, ""), //
-						Primitive.require("status_reasion", DataType.String, "")//
+		return ParamObject.required(//
+				ParamObject.required("status", "返回", //
+						Primitive.required("status_code", DataType.Number, ""), //
+						Primitive.required("status_reasion", DataType.String, "")//
 				), //
 				buildResult()//
 		);
@@ -38,16 +38,16 @@ public class TestResponse {
 
 	private static Param buildResult() {
 		return ParamObject.optional("result", "返回数据", //
-				Primitive.require("name", DataType.String, "姓名").setMax(5), //
-				Primitive.require("age", DataType.Number, "年龄").setMin(0).setMax(120), //
-				ParamArray.require("items", "商品列表", //
-						ParamObject.require(//
-								Primitive.require("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
-								Primitive.require("name", DataType.String, "商品名称").setMax(50)//
+				Primitive.required("name", DataType.String, "姓名").setMax(5), //
+				Primitive.required("age", DataType.Number, "年龄").setMin(0).setMax(120), //
+				ParamArray.required("items", "商品列表", //
+						ParamObject.required(//
+								Primitive.required("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
+								Primitive.required("name", DataType.String, "商品名称").setMax(50)//
 						)//
 				), //
-				ParamArray.require("ids", "id列表", //
-						Primitive.require(DataType.Number).setMax(100) //
+				ParamArray.required("ids", "id列表", //
+						Primitive.required(DataType.Number).setMax(100) //
 				)//
 		);
 	}

@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ParamBase implements Param {
 	private String name;
-	private boolean require;
+	private boolean required;
 	private DataType dataType;
 	private String description;
 	// 父亲节点
@@ -27,16 +27,16 @@ public class ParamBase implements Param {
 	public ParamBase() {
 	}
 
-	public ParamBase(String name, boolean require, DataType dataType, String description) {
+	public ParamBase(String name, boolean required, DataType dataType, String description) {
 		this.name = name;
-		this.require = require;
+		this.required = required;
 		this.dataType = dataType;
 		this.description = description;
 	}
 
-	public ParamBase(String name, boolean require, DataType dataType) {
+	public ParamBase(String name, boolean required, DataType dataType) {
 		this.name = name;
-		this.require = require;
+		this.required = required;
 		this.dataType = dataType;
 	}
 
@@ -44,8 +44,8 @@ public class ParamBase implements Param {
 		return name;
 	}
 
-	public boolean isRequire() {
-		return require;
+	public boolean isRequired() {
+		return required;
 	}
 
 	public DataType getDataType() {
@@ -60,8 +60,8 @@ public class ParamBase implements Param {
 		this.name = name;
 	}
 
-	public void setRequire(boolean require) {
-		this.require = require;
+	public void setRequired(boolean required) {
+		this.required = required;
 	}
 
 	public void setDataType(DataType dataType) {
@@ -124,7 +124,7 @@ public class ParamBase implements Param {
 			if (children != null && children.length > 0) {
 				param = children[0];
 			}
-			return new ParamArray(name, require, description, param);
+			return new ParamArray(name, required, description, param);
 		}
 		throw ErrorUtils.newClassCastException(this.getClass(), ParamArray.class);
 	}
@@ -132,7 +132,7 @@ public class ParamBase implements Param {
 	@Override
 	public ParamObject asObject() {
 		if (isObject()) {
-			return new ParamObject(name, require, description, children);
+			return new ParamObject(name, required, description, children);
 		}
 		throw ErrorUtils.newClassCastException(this.getClass(), ParamObject.class);
 	}
@@ -140,7 +140,7 @@ public class ParamBase implements Param {
 	@Override
 	public Primitive asPrimitive() {
 		if (isPrimitive()) {
-			return new Primitive(name, require, dataType, description, min, max).setExampleValue(exampleValue);
+			return new Primitive(name, required, dataType, description, min, max).setExampleValue(exampleValue);
 		}
 		throw ErrorUtils.newClassCastException(this.getClass(), Primitive.class);
 	}

@@ -100,7 +100,7 @@ public interface Param {
 	 * 
 	 * @return
 	 */
-	boolean isRequire();
+	boolean isRequired();
 
 	String getPath();
 }

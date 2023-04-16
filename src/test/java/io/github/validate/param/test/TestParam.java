@@ -29,17 +29,17 @@ import io.github.validate.param.Primitive;
 
 public class TestParam {
     private Param buildParam() {
-        return ParamObject.require("objParam", "对象参数", //
-                Primitive.require("name", DataType.String, "姓名").setMax(5), //
-                Primitive.require("age", DataType.Number, "年龄").setMin(0).setMax(120), //
-                ParamArray.require("items", "商品列表", //
-                        ParamObject.require(//
-                                Primitive.require("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
-                                Primitive.require("name", DataType.String, "商品名称").setMax(50)//
+        return ParamObject.required("objParam", "对象参数", //
+                Primitive.required("name", DataType.String, "姓名").setMax(5), //
+                Primitive.required("age", DataType.Number, "年龄").setMin(0).setMax(120), //
+                ParamArray.required("items", "商品列表", //
+                        ParamObject.required(//
+                                Primitive.required("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
+                                Primitive.required("name", DataType.String, "商品名称").setMax(50)//
                         )//
                 ), //
-                ParamArray.require("ids", "id列表", //
-                        Primitive.require(DataType.Number).setMax(100) //
+                ParamArray.required("ids", "id列表", //
+                        Primitive.required(DataType.Number).setMax(100) //
                 )//
         );
     }
@@ -106,7 +106,7 @@ public class TestParam {
         map.put("sql", "CSRF漏洞");
         request.addParameter("userInfo", JsonUtils.stringify(map));
         Param param = ParamObject.optional("userInfo", "用户信息",
-                Primitive.require("name", DataType.String, "姓名").setMin(2).setMax(32),
+                Primitive.required("name", DataType.String, "姓名").setMin(2).setMax(32),
                 Primitive.optional("age", DataType.Number, null).between(18, 65)
         );
         try {
@@ -126,7 +126,7 @@ public class TestParam {
         map.put("sql", "CSRF漏洞");//各位传递的参数，在经过提取提取时，将会自动忽略
         request.addParameter("userInfo", JsonUtils.stringify(map));
         Param param = ParamObject.optional("userInfo", null,
-                Primitive.require("name", DataType.String, null),
+                Primitive.required("name", DataType.String, null),
                 Primitive.optional("age", DataType.Number, null)
         );
         Map<String, Object> extractData = Validation.request(param).checkRequest(request).extractRequest(request);
@@ -148,23 +148,23 @@ public class TestParam {
             MockHttpServletRequest request = new MockHttpServletRequest();
             request.addParameter("A1", a1);
             request.addParameter("B1", b1);
-            Param A1 = ParamObject.require("A1", "参数描述", //
-                    ParamObject.require("result", "参数描述", //
-                            ParamArray.require("T", "参数描述", //
-                                    ParamObject.require(//
-                                            ParamObject.require("status", "参数描述", //
-                                                    Primitive.require("statusCode", DataType.Number, "参数描述")//
+            Param A1 = ParamObject.required("A1", "参数描述", //
+                    ParamObject.required("result", "参数描述", //
+                            ParamArray.required("T", "参数描述", //
+                                    ParamObject.required(//
+                                            ParamObject.required("status", "参数描述", //
+                                                    Primitive.required("statusCode", DataType.Number, "参数描述")//
                                             ), //
-                                            ParamArray.require("result", "参数描述", //
-                                                    ParamObject.require(//
-                                                            Primitive.require("result", DataType.String, "参数描述")//
+                                            ParamArray.required("result", "参数描述", //
+                                                    ParamObject.required(//
+                                                            Primitive.required("result", DataType.String, "参数描述")//
                                                     )//
                                             )//
                                     )//
                             )//
                     )//
             );
-            Param B1 = ParamObject.require("B1", "X", ParamObject.require("result", "X"));
+            Param B1 = ParamObject.required("B1", "X", ParamObject.required("result", "X"));
             Map<String, Object> map = Validation.request(A1, B1).checkRequest(request).extractRequest(request);
             Assert.fail("没有出现预期错误");
             System.out.println(map);
@@ -184,20 +184,20 @@ public class TestParam {
             System.out.println(a1);
             System.out.println(b1);
             System.out.println(request.getParameter("list"));
-            Param A1 = ParamObject.require("A1", "参数描述", //
-                    ParamObject.require("result", "参数描述", //
-                            ParamArray.require("T", "参数描述", //
-                                    ParamObject.require(//
-                                            ParamObject.require("status", "参数描述", //
-                                                    Primitive.require("statusCode", DataType.Number, "参数描述")//
+            Param A1 = ParamObject.required("A1", "参数描述", //
+                    ParamObject.required("result", "参数描述", //
+                            ParamArray.required("T", "参数描述", //
+                                    ParamObject.required(//
+                                            ParamObject.required("status", "参数描述", //
+                                                    Primitive.required("statusCode", DataType.Number, "参数描述")//
                                             ), //
-                                            ParamArray.require("result", "参数描述", //
-                                                    ParamObject.require(//
-                                                            ParamObject.require("status", "参数描述", //
-                                                                    Primitive.require("statusReason", DataType.String, "参数描述")//
+                                            ParamArray.required("result", "参数描述", //
+                                                    ParamObject.required(//
+                                                            ParamObject.required("status", "参数描述", //
+                                                                    Primitive.required("statusReason", DataType.String, "参数描述")//
                                                             ), //
-                                                            ParamObject.require("result", "参数描述", //
-                                                                    Primitive.require("city", DataType.String, "参数描述")//
+                                                            ParamObject.required("result", "参数描述", //
+                                                                    Primitive.required("city", DataType.String, "参数描述")//
                                                             )//
                                                     )//
                                             )//
@@ -205,21 +205,21 @@ public class TestParam {
                             )//
                     )//
             );
-            Param list = ParamArray.require("list", "参数描述", //
-                    ParamObject.require(//
-                            ParamObject.require("result", "参数描述", //
-                                    ParamArray.require("T", "参数描述", //
-                                            ParamObject.require(//
-                                                    ParamObject.require("status", "参数描述", //
-                                                            Primitive.require("statusCode", DataType.Number, "参数描述")//
+            Param list = ParamArray.required("list", "参数描述", //
+                    ParamObject.required(//
+                            ParamObject.required("result", "参数描述", //
+                                    ParamArray.required("T", "参数描述", //
+                                            ParamObject.required(//
+                                                    ParamObject.required("status", "参数描述", //
+                                                            Primitive.required("statusCode", DataType.Number, "参数描述")//
                                                     ), //
-                                                    ParamArray.require("result", "参数描述", //
-                                                            ParamObject.require(//
-                                                                    ParamObject.require("status", "参数描述", //
-                                                                            Primitive.require("statusReason", DataType.String, "参数描述")//
+                                                    ParamArray.required("result", "参数描述", //
+                                                            ParamObject.required(//
+                                                                    ParamObject.required("status", "参数描述", //
+                                                                            Primitive.required("statusReason", DataType.String, "参数描述")//
                                                                     ), //
-                                                                    ParamObject.require("result", "参数描述", //
-                                                                            Primitive.require("city", DataType.String, "参数描述")//
+                                                                    ParamObject.required("result", "参数描述", //
+                                                                            Primitive.required("city", DataType.String, "参数描述")//
                                                                     )//
                                                             )//
                                                     )//
@@ -229,24 +229,24 @@ public class TestParam {
                     )//
             );
 
-            Param B1 = ParamObject.require("B1", "参数描述", //
-                    ParamObject.require("result", "参数描述", //
-                            ParamObject.require("B", "参数描述", //
-                                    ParamObject.require("status", "参数描述", //
+            Param B1 = ParamObject.required("B1", "参数描述", //
+                    ParamObject.required("result", "参数描述", //
+                            ParamObject.required("B", "参数描述", //
+                                    ParamObject.required("status", "参数描述", //
                                             Primitive.optional("statusCode", DataType.Number, "参数描述")//
                                     ), //
                                     ParamArray.optional("result", "参数描述", //
-                                            ParamObject.require(//
+                                            ParamObject.required(//
                                                     Primitive.optional("result", DataType.String, "参数描述"), //
                                                     ParamObject.optional("status", "", //
-                                                            Primitive.require("statusCode", DataType.Number, "参数描述")//
+                                                            Primitive.required("statusCode", DataType.Number, "参数描述")//
                                                     )//
                                             )//
                                     )//
                             )//
                     ), //
-                    ParamObject.require("status", "参数描述", //
-                            Primitive.require("statusReason", DataType.String, "statusReason")//
+                    ParamObject.required("status", "参数描述", //
+                            Primitive.required("statusReason", DataType.String, "statusReason")//
                     )//
             );
             Map<String, Object> map = Validation.request(A1, B1).checkRequest(request).extractRequest(request);
@@ -316,7 +316,7 @@ public class TestParam {
     public void test_string_length() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addParameter("password", "zhangsanfeng---------");
-        Primitive param = Primitive.require("password", DataType.String, "密码").setMin(8).setMax(20);
+        Primitive param = Primitive.required("password", DataType.String, "密码").setMin(8).setMax(20);
         try {
             Validation.request(param).checkRequest(request);
             Assert.fail("没有出现预期错误");
@@ -332,7 +332,7 @@ public class TestParam {
         request.addParameter("price_min", "7.19");
         request.addParameter("price_max", "20.00001");
         {
-            Primitive param = Primitive.require("price", DataType.Number, "价格").setMin(8).setMax(20);
+            Primitive param = Primitive.required("price", DataType.Number, "价格").setMin(8).setMax(20);
             try {
                 Validation.request(param).checkRequest(request);
                 Assert.fail("没有出现预期错误");
@@ -341,12 +341,12 @@ public class TestParam {
             }
         }
         {
-            Primitive param = Primitive.require("price_min", DataType.Number, "价格").setMin(7.18).setMax(20);
+            Primitive param = Primitive.required("price_min", DataType.Number, "价格").setMin(7.18).setMax(20);
             Validation.request(param).checkRequest(request);
         }
 
         {
-            Primitive param = Primitive.require("price_max", DataType.Number, "价格").setMin(7.18).setMax(20);
+            Primitive param = Primitive.required("price_max", DataType.Number, "价格").setMin(7.18).setMax(20);
             try {
                 Validation.request(param).checkRequest(request);
                 Assert.fail("没有出现预期错误");
@@ -359,17 +359,17 @@ public class TestParam {
     @Test
     public void test_err_param_definds() {
         try {
-            Primitive.require("", DataType.Array, "");
+            Primitive.required("", DataType.Array, "");
             Assert.fail("没有出现预期错误");
         } catch (Exception e) {
             Assert.assertEquals("无效的数据类型:Array", e.getMessage());
         }
         try {
-            ParamObject.require("o", "描述", //
+            ParamObject.required("o", "描述", //
                     ParamArray.optional("a", "描述", //
-                            ParamArray.require("a1", "描述", //
-                                    ParamObject.require(//
-                                            Primitive.require("", DataType.String, "")//
+                            ParamArray.required("a1", "描述", //
+                                    ParamObject.required(//
+                                            Primitive.required("", DataType.String, "")//
                                     )//
                             )//
                     )//
@@ -383,8 +383,8 @@ public class TestParam {
     @Test
     public void test_error() {
         {
-            ParamObject param = ParamObject.require("objParam", "对象参数", //
-                    ParamObject.require("obj1", "对象", Primitive.require("name", DataType.String, "姓名")));
+            ParamObject param = ParamObject.required("objParam", "对象参数", //
+                    ParamObject.required("obj1", "对象", Primitive.required("name", DataType.String, "姓名")));
             MockHttpServletRequest request = new MockHttpServletRequest();
             {
                 try {
@@ -399,8 +399,8 @@ public class TestParam {
 
         {
             try {
-                ParamArray.require("ids", "id列表", //
-                        Primitive.require("id", DataType.Number, "商品ID").setMax(100) //
+                ParamArray.required("ids", "id列表", //
+                        Primitive.required("id", DataType.Number, "商品ID").setMax(100) //
                 );
                 Assert.fail("没有出现预期错误");
             } catch (Exception e) {
@@ -408,18 +408,18 @@ public class TestParam {
             }
         }
         {
-            ParamObject param = ParamObject.require("objParam", "对象参数", //
-                    ParamObject.require("obj1", "对象", //
-                            Primitive.require("name", DataType.String, "姓名")//
+            ParamObject param = ParamObject.required("objParam", "对象参数", //
+                    ParamObject.required("obj1", "对象", //
+                            Primitive.required("name", DataType.String, "姓名")//
                     ), //
-                    ParamArray.require("items", "商品列表", //
-                            ParamObject.require(//
-                                    Primitive.require("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
-                                    Primitive.require("name", DataType.String, "商品名称").setMax(50)//
+                    ParamArray.required("items", "商品列表", //
+                            ParamObject.required(//
+                                    Primitive.required("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
+                                    Primitive.required("name", DataType.String, "商品名称").setMax(50)//
                             )//
                     ), //
-                    ParamArray.require("ids", "id列表", //
-                            Primitive.require(DataType.Number).setMax(100) //
+                    ParamArray.required("ids", "id列表", //
+                            Primitive.required(DataType.Number).setMax(100) //
                     )//
             );
             MockHttpServletRequest request = new MockHttpServletRequest();
@@ -436,15 +436,15 @@ public class TestParam {
 
         {
             {
-                ParamObject param = ParamObject.require("objParam", "对象参数", //
-                        ParamArray.require("items", "商品列表", //
-                                ParamObject.require(//
-                                        Primitive.require("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
-                                        Primitive.require("name", DataType.String, "商品名称").setMax(50)//
+                ParamObject param = ParamObject.required("objParam", "对象参数", //
+                        ParamArray.required("items", "商品列表", //
+                                ParamObject.required(//
+                                        Primitive.required("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
+                                        Primitive.required("name", DataType.String, "商品名称").setMax(50)//
                                 )//
                         ), //
-                        ParamArray.require("ids", "id列表", //
-                                Primitive.require(DataType.Number).setMax(100) //
+                        ParamArray.required("ids", "id列表", //
+                                Primitive.required(DataType.Number).setMax(100) //
                         )//
                 );
                 MockHttpServletRequest request = new MockHttpServletRequest();
@@ -462,13 +462,13 @@ public class TestParam {
 
         {
             {
-                ParamObject param = ParamObject.require("objParam", "对象参数", //
-                        ParamArray.require("items", "商品列表", //
-                                ParamObject.require(//
-                                        Primitive.require("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
-                                        Primitive.require("name", DataType.String, "商品名称").setMax(50), //
-                                        ParamArray.require("ids", "id列表", //
-                                                Primitive.require(DataType.Number).setMax(100) //
+                ParamObject param = ParamObject.required("objParam", "对象参数", //
+                        ParamArray.required("items", "商品列表", //
+                                ParamObject.required(//
+                                        Primitive.required("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
+                                        Primitive.required("name", DataType.String, "商品名称").setMax(50), //
+                                        ParamArray.required("ids", "id列表", //
+                                                Primitive.required(DataType.Number).setMax(100) //
                                         )//
                                 )//
                         ) //
@@ -488,13 +488,13 @@ public class TestParam {
 
         {
             {
-                ParamObject param = ParamObject.require("objParam", "对象参数", //
-                        ParamArray.require("items", "商品列表", //
-                                ParamObject.require(//
-                                        Primitive.require("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
-                                        Primitive.require("name", DataType.String, "商品名称").setMax(50), //
-                                        ParamArray.require("ids", "id列表", //
-                                                Primitive.require(DataType.Number).setMax(100) //
+                ParamObject param = ParamObject.required("objParam", "对象参数", //
+                        ParamArray.required("items", "商品列表", //
+                                ParamObject.required(//
+                                        Primitive.required("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
+                                        Primitive.required("name", DataType.String, "商品名称").setMax(50), //
+                                        ParamArray.required("ids", "id列表", //
+                                                Primitive.required(DataType.Number).setMax(100) //
                                         )//
                                 )//
                         ) //
@@ -514,13 +514,13 @@ public class TestParam {
 
         {
             {
-                ParamObject param = ParamObject.require("objParam", "对象参数", //
-                        ParamArray.require("items", "商品列表", //
-                                ParamObject.require(//
-                                        Primitive.require("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
-                                        Primitive.require("name", DataType.String, "商品名称").setMax(50), //
-                                        ParamArray.require("ids", "id列表", //
-                                                Primitive.require(DataType.Number).setMax(100) //
+                ParamObject param = ParamObject.required("objParam", "对象参数", //
+                        ParamArray.required("items", "商品列表", //
+                                ParamObject.required(//
+                                        Primitive.required("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
+                                        Primitive.required("name", DataType.String, "商品名称").setMax(50), //
+                                        ParamArray.required("ids", "id列表", //
+                                                Primitive.required(DataType.Number).setMax(100) //
                                         )//
                                 )//
                         ) //
@@ -540,13 +540,13 @@ public class TestParam {
 
         {
             {
-                ParamObject param = ParamObject.require("objParam", "对象参数", //
-                        ParamArray.require("items", "商品列表", //
-                                ParamObject.require(//
-                                        Primitive.require("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
-                                        Primitive.require("name", DataType.String, "商品名称").setMax(50), //
-                                        ParamArray.require("ids", "id列表", //
-                                                Primitive.require(DataType.Number).setMin(10).setMax(100) //
+                ParamObject param = ParamObject.required("objParam", "对象参数", //
+                        ParamArray.required("items", "商品列表", //
+                                ParamObject.required(//
+                                        Primitive.required("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
+                                        Primitive.required("name", DataType.String, "商品名称").setMax(50), //
+                                        ParamArray.required("ids", "id列表", //
+                                                Primitive.required(DataType.Number).setMin(10).setMax(100) //
                                         )//
                                 )//
                         ) //
@@ -566,13 +566,13 @@ public class TestParam {
 
         {
             {
-                ParamObject param = ParamObject.require("objParam", "对象参数", //
-                        ParamArray.require("items", "商品列表", //
-                                ParamObject.require(//
-                                        Primitive.require("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
-                                        Primitive.require("name", DataType.String, "商品名称").setMax(50), //
-                                        ParamArray.require("ids", "id列表", //
-                                                Primitive.require(DataType.Number).setMin(10).setMax(100) //
+                ParamObject param = ParamObject.required("objParam", "对象参数", //
+                        ParamArray.required("items", "商品列表", //
+                                ParamObject.required(//
+                                        Primitive.required("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
+                                        Primitive.required("name", DataType.String, "商品名称").setMax(50), //
+                                        ParamArray.required("ids", "id列表", //
+                                                Primitive.required(DataType.Number).setMin(10).setMax(100) //
                                         )//
                                 )//
                         ) //
@@ -592,13 +592,13 @@ public class TestParam {
 
         {
             {
-                ParamObject param = ParamObject.require("objParam", "对象参数", //
-                        ParamArray.require("items", "商品列表", //
-                                ParamObject.require(//
-                                        Primitive.require("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
-                                        Primitive.require("name", DataType.String, "商品名称").setMax(50), //
-                                        ParamArray.require("ids", "id列表", //
-                                                Primitive.require(DataType.Number).setMin(10).setMax(100) //
+                ParamObject param = ParamObject.required("objParam", "对象参数", //
+                        ParamArray.required("items", "商品列表", //
+                                ParamObject.required(//
+                                        Primitive.required("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
+                                        Primitive.required("name", DataType.String, "商品名称").setMax(50), //
+                                        ParamArray.required("ids", "id列表", //
+                                                Primitive.required(DataType.Number).setMin(10).setMax(100) //
                                         )//
                                 )//
                         ) //
@@ -618,16 +618,16 @@ public class TestParam {
 
         {
             {
-                ParamObject param = ParamObject.require("objParam", "对象参数", //
-                        ParamArray.require("items", "商品列表", //
-                                ParamObject.require(//
-                                        Primitive.require("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
-                                        Primitive.require("name", DataType.String, "商品名称").setMax(50), //
-                                        ParamArray.require("ids", "id列表", //
-                                                Primitive.require(DataType.Number).setMin(10).setMax(100) //
+                ParamObject param = ParamObject.required("objParam", "对象参数", //
+                        ParamArray.required("items", "商品列表", //
+                                ParamObject.required(//
+                                        Primitive.required("id", DataType.Number, "商品ID").setMin(1).setMax(10), //
+                                        Primitive.required("name", DataType.String, "商品名称").setMax(50), //
+                                        ParamArray.required("ids", "id列表", //
+                                                Primitive.required(DataType.Number).setMin(10).setMax(100) //
                                         ), //
-                                        ParamArray.require("array", "x", //
-                                                ParamObject.require( //
+                                        ParamArray.required("array", "x", //
+                                                ParamObject.required( //
                                                         Primitive.optional("test", DataType.Number, "")//
                                                 )//
                                         )//
@@ -653,11 +653,11 @@ public class TestParam {
     public void test_init_param_error() {
         {
             try {
-                ParamObject.require("objParam", "对象参数", //
-                        ParamArray.require("items", "商品列表", //
-                                ParamObject.require(//
-                                        ParamArray.require("array", "x", //
-                                                ParamObject.require("x", "x", //
+                ParamObject.required("objParam", "对象参数", //
+                        ParamArray.required("items", "商品列表", //
+                                ParamObject.required(//
+                                        ParamArray.required("array", "x", //
+                                                ParamObject.required("x", "x", //
                                                         Primitive.optional("test", DataType.Number, "")//
                                                 )//
                                         )//
@@ -684,23 +684,23 @@ public class TestParam {
             MockHttpServletRequest request = new MockHttpServletRequest();
             request.addParameter("A1", a1);
             request.addParameter("B1", b1);
-            Param A1 = ParamObject.require("A1", "参数描述", //
-                    ParamObject.require("result", "参数描述", //
-                            ParamArray.require("T", "参数描述", //
-                                    ParamObject.require(//
-                                            ParamObject.require("status", "参数描述", //
-                                                    Primitive.require("statusCode", DataType.Number, "参数描述")//
+            Param A1 = ParamObject.required("A1", "参数描述", //
+                    ParamObject.required("result", "参数描述", //
+                            ParamArray.required("T", "参数描述", //
+                                    ParamObject.required(//
+                                            ParamObject.required("status", "参数描述", //
+                                                    Primitive.required("statusCode", DataType.Number, "参数描述")//
                                             ), //
-                                            ParamArray.require("result", "参数描述", //
-                                                    ParamObject.require(//
-                                                            Primitive.require("result", DataType.String, "参数描述")//
+                                            ParamArray.required("result", "参数描述", //
+                                                    ParamObject.required(//
+                                                            Primitive.required("result", DataType.String, "参数描述")//
                                                     )//
                                             )//
                                     )//
                             )//
                     )//
             );
-            Param B1 = ParamObject.require("B1", "X", ParamObject.require("result", "X"));
+            Param B1 = ParamObject.required("B1", "X", ParamObject.required("result", "X"));
             {// 经过一次序列化在反序列化处理
                 A1 = GsonSerialize.INSTANCE.decode(GsonSerialize.INSTANCE.encode(A1), ParamBase.class);
                 B1 = GsonSerialize.INSTANCE.decode(GsonSerialize.INSTANCE.encode(B1), ParamBase.class);
@@ -718,7 +718,7 @@ public class TestParam {
         try {
             MockHttpServletRequest request = new MockHttpServletRequest();
             request.addParameter("obj", "");
-            Param param = ParamObject.require("obj", "参数描述");
+            Param param = ParamObject.required("obj", "参数描述");
             Validation.request(param).checkRequest(request);
             Assert.fail("没有出现预期错误");
         } catch (IllegalArgumentException e) {

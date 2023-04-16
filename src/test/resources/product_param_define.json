@@ -1,12 +1,12 @@
 {
   "name":"product",
-  "require":true,
+  "required":true,
   "dataType":"Object",
   "description":"商品对象",
   "children":[
     {
       "name":"name",
-      "require":true,
+      "required":true,
       "dataType":"String",
       "description":"商品名称",
       "children":[
@@ -16,7 +16,7 @@
     },
     {
       "name":"price",
-      "require":true,
+      "required":true,
       "dataType":"Number",
       "description":"商品价格",
       "children":[
@@ -26,18 +26,18 @@
     },
     {
       "name":"skus",
-      "require":true,
+      "required":true,
       "dataType":"Array",
       "description":"商品SKU属性列表",
       "children":[
         {
           "name":"",
-          "require":true,
+          "required":true,
           "dataType":"Object",
           "children":[
             {
               "name":"id",
-              "require":true,
+              "required":true,
               "dataType":"Number",
               "description":"参数描述",
               "children":[
@@ -47,7 +47,7 @@
             },
             {
               "name":"name",
-              "require":true,
+              "required":true,
               "dataType":"String",
               "description":"参数描述",
               "children":[
@@ -57,18 +57,18 @@
             },
             {
               "name":"code",
-              "require":true,
+              "required":true,
               "dataType":"Array",
               "description":"参数描述",
               "children":[
                 {
                   "name":"",
-                  "require":false,
+                  "required":false,
                   "dataType":"Object",
                   "children":[
                     {
                       "name":"id",
-                      "require":false,
+                      "required":false,
                       "dataType":"Number",
                       "description":"id",
                       "children":[
@@ -78,7 +78,7 @@
                     },
                     {
                       "name":"title",
-                      "require":false,
+                      "required":false,
                       "dataType":"String",
                       "description":"标题",
                       "children":[

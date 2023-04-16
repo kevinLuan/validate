@@ -11,8 +11,8 @@ public class ParamObject extends ParamBase {
 		super();
 	}
 
-	public ParamObject(String name, boolean require, String description, Param[] children) {
-		super(name, require, DataType.Object, description);
+	public ParamObject(String name, boolean required, String description, Param[] children) {
+		super(name, required, DataType.Object, description);
 		if (children != null) {
 			this.children = new ParamBase[children.length];
 			for (int i = 0; i < children.length; i++) {
@@ -25,11 +25,11 @@ public class ParamObject extends ParamBase {
 		}
 	}
 
-	public static ParamObject require(String name, String description, Param... children) {
+	public static ParamObject required(String name, String description, Param... children) {
 		return new ParamObject(name, true, description, children);
 	}
 
-	public static ParamObject require(Param... children) {
+	public static ParamObject required(Param... children) {
 		return new ParamObject("", true, null, children);
 	}
 

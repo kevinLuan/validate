@@ -27,7 +27,7 @@ public class NumberParser {
 	}
 
 	public void check(Primitive primitive) {
-		if (primitive.isRequire()) {
+		if (primitive.isRequired()) {
 			if (value == null) {
 				throw new IllegalArgumentException(primitive.getName() + "参数不能为空");
 			}

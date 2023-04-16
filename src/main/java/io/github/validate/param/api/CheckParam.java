@@ -35,7 +35,7 @@ class CheckParam {
 		if (param == null) {
 			throw new IllegalArgumentException("param must be not null");
 		}
-		if (param.isRequire()) {
+		if (param.isRequired()) {
 			if (JsonUtils.isNull(jsonNode)) {
 				throw new IllegalArgumentException(getTipMissing(param.getPath()));
 			}
@@ -62,7 +62,7 @@ class CheckParam {
 		for (Param param : params) {
 			String name = param.getName();
 			String value = request.getParameter(name);
-			if (param.isRequire()) {
+			if (param.isRequired()) {
 				if (value == null) {
 					throw new IllegalArgumentException(getTipMissing(param.getPath()));
 				}
@@ -98,7 +98,7 @@ class CheckParam {
 				return;// 没有子节点
 			}
 			Param children = array.getChildrenAsParam();
-			if (array.isRequire()) {
+			if (array.isRequired()) {
 				if (value.size() == 0) {
 					throw new IllegalArgumentException(param.getPath() + "[]不能为空");
 				}
@@ -126,7 +126,7 @@ class CheckParam {
 			String value = JsonUtils.toString(node);
 			if (param.getDataType().isNumber()) {
 				try {
-					NumberParser.parse(value, param.isRequire()).check(param.asPrimitive());
+					NumberParser.parse(value, param.isRequired()).check(param.asPrimitive());
 				} catch (NumberFormatException e) {
 					if (param.getParentNode() != null) {
 						if (param.getParentNode().isArray()) {
@@ -162,7 +162,7 @@ class CheckParam {
 		ObjectNode objNode = (ObjectNode) jsonNode;
 		for (Param p : obj.getChildren()) {
 			JsonNode value = objNode.get(p.getName());
-			if (p.isRequire()) {
+			if (p.isRequired()) {
 				if (JsonUtils.isNull(value)) {
 					throw new IllegalArgumentException(getTipMissing(p.getPath()));
 				}
